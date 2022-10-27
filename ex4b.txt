@@ -1,0 +1,170 @@
+LockFreeStack.java
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+
+public class LockFreeStack {
+  AtomicReference<Node> top = new AtomicReference<Node>(null);
+  static final int MIN_DELAY = 0;
+  static final int MAX_DELAY = 1500;
+  Backoff backoff = new Backoff(MIN_DELAY, MAX_DELAY);
+
+  protected boolean tryPush(Node node) {
+    Node oldTop = top.get();
+    node.next = oldTop;
+    return (top.compareAndSet(oldTop, node));
+  }
+  public void push(int value) throws Exception {
+    Node node = new Node(value);
+    while(true) {
+      if(tryPush(node)) {
+        return;
+      } else {
+        try {
+          System.out.println("Call backoff");
+        backoff.backoff();
+          } catch (Exception e) {
+          e.getStackTrace();
+          }
+      }
+    }
+  }
+  protected Node tryPop() throws Exception {
+    Node oldTop = top.get();
+    System.out.println("oldTop.value "+oldTop.value);
+    if(oldTop == null) {
+      throw new Exception();
+    }
+    Node newTop = oldTop.next;
+    System.out.println("newTop.value "+newTop.value);
+    if(top.compareAndSet(oldTop, newTop)) {
+      System.out.println("Return oldTop.value "+oldTop.value);
+      return oldTop;
+    } else {
+      System.out.println("Return null");
+      return null;
+    }
+  }
+  public int pop() throws Exception{
+    while(true) {
+      Node returnNode = tryPop();
+      if(returnNode != null) {
+        System.out.println("Return returnNode.value as "+returnNode.value);
+        return returnNode.value;
+      } else {
+        try {
+          System.out.println("Call backoff");
+        backoff.backoff();
+          } catch(Exception e) {
+          e.getStackTrace();
+          }
+      }
+    }
+  }
+  private class Backoff {
+final int minDelay, maxDelay;
+int limit;
+final Random random;
+public Backoff(int min, int max) {
+minDelay = min;
+maxDelay = min;
+limit = minDelay;
+random = new Random();
+}
+ public void backoff() throws Exception {
+ int delay = random.nextInt(limit);
+ limit = Math.min(maxDelay, 2 * limit);
+ Thread.sleep(delay);
+ }
+}
+  private class Node{
+  public int value;
+  public Node next;
+  public Node(int value1) {
+    value = value1;
+    next = null;
+  }
+}
+}
+
+
+Main.java
+
+import java.util.*;
+
+class Main {
+  public static void main(String[] args) {
+    int value = 0, option =0;
+    Scanner myObj = new Scanner(System.in);
+    LockFreeStack stack=new LockFreeStack();
+
+    while(true) {
+      System.out.println("1.Push\n2.Pop\n");
+       System.out.println("Enter the option");
+      option = Integer.parseInt(myObj.nextLine());
+      switch (option) {
+        case 1:
+          System.out.println("*******PUSH*******");
+          System.out.println("Enter the values to push");
+          value = Integer.parseInt(myObj.nextLine());
+          try {
+          stack.push(value);
+            } catch (Exception e) {
+          e.printStackTrace();
+      }
+          break;
+        case 2:
+          System.out.println("******POP*******");
+          try {
+          value = stack.pop();
+            } catch (Exception e) {
+          e.printStackTrace();
+      }
+           System.out.println("The popped element is " +value);
+
+          break;
+        default:
+          System.out.println("Wrong Option");
+          break;
+      }
+  }
+}
+}
+
+OUTPUT:
+ sh -c javac -classpath .:target/dependency/* -d . $(find . -type f -name '*.java')
+ java -classpath .:target/dependency/* Main
+1.Push
+2.Pop
+
+Enter the option
+1
+*******PUSH*******
+Enter the values to push
+34
+1.Push
+2.Pop
+
+Enter the option
+1
+*******PUSH*******
+Enter the values to push
+67
+1.Push
+2.Pop
+
+Enter the option
+1
+*******PUSH*******
+Enter the values to push
+78
+1.Push
+2.Pop
+
+Enter the option
+2
+******POP*******
+The popped element is 78
+1.Push
+2.Pop
+
+Enter the option

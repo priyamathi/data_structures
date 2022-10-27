@@ -1,0 +1,140 @@
+BoundedQueue.java
+
+import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class BoundedQueue<T> {
+  ReentrantLock enqlock, deqlock;
+  Condition notEmptyCondition, notFullCondition;
+  AtomicInteger size;
+  Node head, tail;
+  int capacity;
+  public BoundedQueue(int _capacity){
+    capacity = _capacity;
+    head = new Node(null);
+    tail = head;
+    size = new AtomicInteger(0);
+    enqlock = new ReentrantLock();
+    notFullCondition = enqlock.newCondition();
+    deqlock = new ReentrantLock();
+    notEmptyCondition = deqlock.newCondition();
+  }
+  public void enq(T x) throws InterruptedException {
+    boolean mustWakeDequeuers = false;
+    enqlock.lock();
+    try {
+      while (size.get() == capacity)
+        notFullCondition.await();
+      Node e = new Node(x);
+      tail.next = tail = e;
+      if(size.getAndIncrement() == 0) {
+        mustWakeDequeuers = true;
+      }
+    } finally {
+      enqlock.unlock();
+      }
+    if (mustWakeDequeuers) {
+      deqlock.lock();
+      try {
+        notEmptyCondition.signalAll();
+      } finally {
+        deqlock.unlock();
+      }
+    }
+  }
+  public T deq() throws InterruptedException {
+    T result;
+    boolean mustWakeEnqueuers = true;
+    deqlock.lock();
+    try {
+      while (size.get() == 0) {
+        notEmptyCondition.await();
+      }
+      result = head.next.item;
+      head = head.next;
+      if ( size.getAndIncrement() == capacity) {
+        mustWakeEnqueuers = true;
+      }
+    } finally {
+      deqlock.unlock();
+    }
+    if (mustWakeEnqueuers) {
+      enqlock.lock();
+      try {
+        notFullCondition.signalAll();
+      } finally {
+        enqlock.unlock();
+      }
+    }
+    return result;
+  }
+    private class Node {
+    T item;
+    Node next;
+    Node(T item) {
+      this.item = item;
+      this.next = null;
+    }
+  }
+}
+
+
+Main.java
+
+import java.util.*;
+
+class Main {
+  public static void main(String[] args) {
+    int value = 0, count = 0;
+    int capacity;
+    Scanner myObj = new Scanner(System.in);
+    System.out.println("Enter the capacity");
+    capacity = Integer.parseInt(myObj.nextLine());
+    BoundedQueue<Integer> queue=new BoundedQueue<Integer>(capacity);
+    System.out.println("ENQUEUE");
+    for (count = 0; count < capacity; count++) {
+      System.out.println("Enter the value to be enqueue");
+      value = Integer.parseInt(myObj.nextLine());
+        try {
+      queue.enq(value);
+          } catch (InterruptedException e) {
+          System.out.println("Interrupted Exception caught");
+      }
+      }
+    System.out.println("DEQUEUE");
+    for (count = 0; count < capacity; count++) {
+
+        try {
+      value = queue.deq();
+         System.out.println("The element in postion :"+ count + " is " +value);
+          } catch (InterruptedException e) {
+          System.out.println("Interrupted Exception caught");
+      }
+      }
+  }
+}
+
+OUTPUT:
+
+Enter the capacity
+5
+ENQUEUE
+Enter the value to be enqueue
+1
+Enter the value to be enqueue
+2
+Enter the value to be enqueue
+5
+Enter the value to be enqueue
+3
+Enter the value to be enqueue
+4
+DEQUEUE
+The element in postion :0 is 1
+The element in postion :1 is 2
+The element in postion :2 is 5
+The element in postion :3 is 3
+The element in postion :4 is 4
