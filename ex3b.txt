@@ -1,0 +1,241 @@
+###########BST TREE TRAVERSALS##########
+#include <iostream>
+#include <string.h>
+#include <stdlib.h>
+using namespace std;
+
+struct Node
+{
+  int data;
+  char book_name[32];
+  char book_author[32];
+  int price;
+  struct Node *leftChild;
+  struct Node *rightChild;
+};
+
+struct Node *newNode(int data, char * book_name, char * book_author, int price);
+struct Node* insertNode(struct Node* root, int data, char * book_name, char * book_author, int price);
+void inorder(struct Node* root);
+void preorder(struct Node* root);
+void postorder(struct Node* root);
+
+struct Node *newNode(int data, char * book_name, char * book_author, int price){
+   struct Node *tempNode = (struct Node *)malloc(sizeof(struct Node));
+    tempNode->data = data;
+  strcpy(tempNode->book_name, book_name);
+  strcpy(tempNode->book_author, book_author);
+  tempNode->price = price;
+   tempNode->leftChild = tempNode->rightChild = NULL;
+   return tempNode;
+}
+struct Node* insertNode(struct Node* root, int data, char * book_name, char * book_author, int price){
+   if (root == NULL)
+     return newNode(data, book_name, book_author, price);
+      if (data < root->data)
+         root->leftChild = insertNode(root->leftChild, data, book_name, book_author, price);
+      else if (data > root->data)
+         root->rightChild = insertNode(root->rightChild, data, book_name, book_author, price);
+   return root;
+}
+
+void inorder(struct Node* root){
+        if(root == NULL)
+            return;
+        inorder(root->leftChild);
+        cout << root->data << " "<< root->book_name <<" " << root->book_author <<" "<< root->price<< endl;
+        inorder(root->rightChild);
+    }
+
+void preorder(struct Node* root){
+        if(root == NULL)
+            return;
+        cout << root->data << " "<< root->book_name <<" " << root->book_author <<" "<< root->price<< endl;
+        preorder(root->leftChild);
+        preorder(root->rightChild);
+    }
+
+void postorder(struct Node* root){
+        if(root == NULL)
+            return;
+        postorder(root->leftChild);
+        postorder(root->rightChild);
+        cout << root->data << " "<< root->book_name <<" " << root->book_author <<" "<< root->price<< endl;
+    }
+
+int main()
+{
+  int option = 0, book_id;
+  char book_title[32];
+  char book_author[32];
+  int book_price = 0;
+  struct Node *root = NULL;
+  struct Node *find_element = NULL;
+  struct Node *delete_element = NULL;
+  cout << "*****DIRECTORY OF BOOK NAMES******\n";
+  while (1)
+    {
+      cout << "To add a new book, click 1" << endl <<
+        "Inorder travesal, click 2" << endl << "Preorder traversal, click 3" << endl << "Postorder traversal, click 4" << endl;
+      cin >> option;
+      switch (option)
+        {
+        case 1:
+          cout << "Please give the book details to be added to the Directory"
+            << endl;
+          cout << "Enter the Unique Book ID" << endl;
+          cin >> book_id;
+          cout << "Enter the book name" << endl;
+          cin >> book_title;
+          cout << "Enter the book author" << endl;
+          cin >> book_author;
+          cout << "Enter the book price" << endl;
+          cin >> book_price;
+    root = insertNode(root, book_id, book_title, book_author, book_price);
+    inorder(root);
+          break;
+        case 2:
+          cout << "Inorder Traversal" << endl;
+    inorder(root);
+          break;
+        case 3:
+          cout << "Preorder Traversal" << endl;
+    preorder(root);
+          break;
+  case 4:
+    cout << "Postorder Traversal" << endl;
+    postorder(root);
+    break;
+        default:
+          cout << "Not a valid option" << endl;
+          break;
+        }
+    }
+}
+
+OUTPUT
+ make -s
+ ./main
+*****DIRECTORY OF BOOK NAMES******
+To add a new book, click 1
+Inorder travesal, click 2
+Preorder traversal, click 3
+Postorder traversal, click 4
+1
+Please give the book details to be added to the Directory
+Enter the Unique Book ID
+110
+Enter the book name
+Secret
+Enter the book author
+Robin_Sharma
+Enter the book price
+200
+110 Secret Robin_Sharma 200
+To add a new book, click 1
+Inorder travesal, click 2
+Preorder traversal, click 3
+Postorder traversal, click 4
+1
+Please give the book details to be added to the Directory
+Enter the Unique Book ID
+111
+Enter the book name
+Harry_potter
+Enter the book author
+Rowling
+Enter the book price
+300
+110 Secret Robin_Sharma 200
+111 Harry_potter Rowling 300
+To add a new book, click 1
+Inorder travesal, click 2
+Preorder traversal, click 3
+Postorder traversal, click 4
+1
+Please give the book details to be added to the Directory
+Enter the Unique Book ID
+109
+Enter the book name
+Ithaca
+Enter the book author
+David
+Enter the book price
+600
+109 Ithaca David 600
+110 Secret Robin_Sharma 200
+111 Harry_potter Rowling 300
+To add a new book, click 1
+Inorder travesal, click 2
+Preorder traversal, click 3
+Postorder traversal, click 4
+1
+Please give the book details to be added to the Directory
+Enter the Unique Book ID
+105
+Enter the book name
+Alchemist
+Enter the book author
+Paulo
+Enter the book price
+100
+105 Alchemist Paulo 100
+109 Ithaca David 600
+110 Secret Robin_Sharma 200
+111 Harry_potter Rowling 300
+To add a new book, click 1
+Inorder travesal, click 2
+Preorder traversal, click 3
+Postorder traversal, click 4
+1
+Please give the book details to be added to the Directory
+Enter the Unique Book ID
+115
+Enter the book name
+Athena
+Enter the book author
+Coelho
+Enter the book price
+300
+105 Alchemist Paulo 100
+109 Ithaca David 600
+110 Secret Robin_Sharma 200
+111 Harry_potter Rowling 300
+115 Athena Coelho 300
+To add a new book, click 1
+Inorder travesal, click 2
+Preorder traversal, click 3
+Postorder traversal, click 4
+2
+Inorder Traversal
+105 Alchemist Paulo 100
+109 Ithaca David 600
+110 Secret Robin_Sharma 200
+111 Harry_potter Rowling 300
+115 Athena Coelho 300
+To add a new book, click 1
+Inorder travesal, click 2
+Preorder traversal, click 3
+Postorder traversal, click 4
+3
+Preorder Traversal
+110 Secret Robin_Sharma 200
+109 Ithaca David 600
+105 Alchemist Paulo 100
+111 Harry_potter Rowling 300
+115 Athena Coelho 300
+To add a new book, click 1
+Inorder travesal, click 2
+Preorder traversal, click 3
+Postorder traversal, click 4
+4
+Postorder Traversal
+105 Alchemist Paulo 100
+109 Ithaca David 600
+115 Athena Coelho 300
+111 Harry_potter Rowling 300
+110 Secret Robin_Sharma 200
+To add a new book, click 1
+Inorder travesal, click 2
+Preorder traversal, click 3
+Postorder traversal, click 4
