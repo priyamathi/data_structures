@@ -1,0 +1,261 @@
+/*** LINKED LIST APPLICATION ****/
+#include <iostream>
+#include <cstring>
+#include <stdlib.h>
+using namespace std;
+
+struct Book
+{
+  char title[32];
+  char author[32];
+  char category[32];
+  int price;
+  struct Book *next;
+} book;
+
+
+void
+insert_new_book (struct Book **head, char *book_title, char *book_author,
+         char *book_genre, int book_price)
+{
+/* Adding a new book details in the directory */
+  struct Book *new_book = (struct Book *) malloc (sizeof (struct Book));
+  struct Book *last = *head;
+
+  strcpy (new_book->title, book_title);
+  strcpy (new_book->author, book_author);
+  strcpy (new_book->category, book_genre);
+  new_book->price = book_price;
+  new_book->next = NULL;
+
+  if (*head == NULL)
+    {
+/* The directory is empty, add the first book */
+      *head = new_book;
+      cout << "Added the book " << new_book->title << "Successfully " << endl;
+      return;
+    }
+
+  while (last->next != NULL)
+    {                /* Transverse to the last book */
+      last = last->next;
+    }
+/* Add the book to the last plave */
+  last->next = new_book;
+  cout << "Added the book " << new_book->title << "Successfully " << endl;
+  return;
+}
+
+void remove_book (struct Book** head, char *book_title)
+{
+    struct Book* temp = *head;
+    struct Book* prev = NULL;
+    if (*head == NULL)
+    {
+      cout << "Directory is empty" << endl;
+    }
+    if ( temp != NULL && strcmp (temp->title, book_title) == 0) {
+        *head = temp-> next;
+        delete temp;
+        cout << "Removed " << book_title << " book successfully"<< endl;
+        return;
+    } else {
+        while (temp != NULL && strcmp (temp->title, book_title) != 0 ) {
+            prev = temp;
+            temp = temp -> next;
+        }
+    // If key was not present in linked list
+    if (temp == NULL) {
+        cout << "The book is not in the directory" << endl;
+        return;
+    }
+
+    // Unlink the node from linked list
+    prev->next = temp->next;
+
+    // Free memory
+    delete temp;
+    cout << "Removed " << book_title << " book successfully"<< endl;
+    }
+}
+
+void get_book_details (struct Book *head, char *book_title)
+{
+  int book_count = 0;
+  while (head != NULL)
+    {
+/* Transverse the book list */
+      if (strcmp (head->title, book_title) == 0)
+    {
+      cout << "TITLE : " << head->title  <<endl;
+      cout << "AUTHOR : " << head->author <<endl;
+      cout << "GENRE : " << head->category <<endl;
+      cout << "PRICE : " << head->price <<endl;
+    book_count = 1;
+    return;
+    }
+      head = head->next;
+    }
+    if ( book_count == 0) {
+      cout << "Book " << book_title << " is not in the directory" <<endl;
+    }
+}
+
+void printall(struct Book *head)
+{
+  cout << " TITLE\t AUTHOR\t GENRE\t PRICE" <<endl;
+ while (head != NULL)
+    {
+/* Transverse the book list */
+      cout << head->title;
+    cout << "\t" << head->author;
+      cout << "\t" << head->category;
+      cout << "\t" << head->price <<endl;
+    head = head->next;
+    }
+}
+int main ()
+{
+  int option = 0;
+  char book_title[32];
+  char book_author[32];
+  char book_genre[32];
+  int book_price = 0;
+  struct Book *head = NULL;
+  cout << "*****DIRECTORY OF BOOK NAMES******\n";
+  while (1)
+    {
+      cout << "To add a new book, click 1" << endl <<
+    "To remove a book, click 2" << endl <<
+    "Search a book in the directory, click 3" << endl <<
+    "Print all the books in the directory, click 4" << endl;
+      cin >> option;
+      switch (option)
+    {
+    case 1:
+      cout << "Please give the book details to be added to the Directory"
+        << endl;
+      cout << "Enter the book title" << endl;
+      cin >> book_title;
+      cout << "Enter the book author" << endl;
+      cin >> book_author;
+      cout << "Enter the book's genre" << endl;
+      cin >> book_genre;
+      cout << "Enter the book price" << endl;
+      cin >> book_price;
+      insert_new_book (&head, book_title, book_author, book_genre,
+               book_price);
+      break;
+    case 2:
+      cout << "Remove the book" << endl;
+      cout << "Please give the book title to be removed" << endl;
+      cin >> book_title;
+      remove_book (&head, book_title);
+      break;
+    case 3:
+      cout << "Fetch the book details" << endl;
+      cout << "Please give the book title for details" << endl;
+      cin >> book_title;
+      get_book_details (head, book_title);
+      break;
+  case 4:
+    printall(head);
+    break;
+    default:
+      cout << "Not a valid option" << endl;
+      break;
+    }
+    }
+}
+
+OUTPUT:
+ make -s
+ ./main
+*****DIRECTORY OF BOOK NAMES******
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+Print all the books in the directory, click 4
+1
+Please give the book details to be added to the Directory
+Enter the book title
+Harrypotter
+Enter the book author
+J.K.Rowling
+Enter the book's genre
+FIction
+Enter the book price
+300
+Added the book HarrypotterSuccessfully
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+Print all the books in the directory, click 4
+1
+Please give the book details to be added to the Directory
+Enter the book title
+Fifth_Mountain
+Enter the book author
+Paulo_Coelho
+Enter the book's genre
+Spiritual
+Enter the book price
+250
+Added the book Fifth_MountainSuccessfully
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+Print all the books in the directory, click 4
+1
+Please give the book details to be added to the Directory
+Enter the book title
+The_Alchemist
+Enter the book author
+Paulo_Coelho
+Enter the book's genre
+Goodness
+Enter the book price
+200
+Added the book The_AlchemistSuccessfully
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+Print all the books in the directory, click 4
+3
+Fetch the book details
+Please give the book title for details
+The_Alchemist
+TITLE : The_Alchemist
+AUTHOR : Paulo_Coelho
+GENRE : Goodness
+PRICE : 200
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+Print all the books in the directory, click 4
+4
+ TITLE   AUTHOR  GENRE   PRICE
+Harrypotter J.K.Rowling FIction 300
+Fifth_Mountain  Paulo_Coelho    Spiritual   250
+The_Alchemist   Paulo_Coelho    Goodness    200
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+Print all the books in the directory, click 4
+2
+Remove the book
+Please give the book title to be removed
+The_Alchemist
+Removed The_Alchemist book successfully
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+Print all the books in the directory, click 4
+4
+ TITLE   AUTHOR  GENRE   PRICE
+Harrypotter J.K.Rowling FIction 300
+Fifth_Mountain  Paulo_Coelho    Spiritual   250
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+Print all the books in the directory, click 4
