@@ -1,0 +1,159 @@
+#####################################################
+STACK USING ARRAY
+
+
+#include <iostream>
+using namespace std;
+int stack[100], n=100, top=-1;
+
+/* Push operation */
+void push(int val) {
+   if (top >= n-1)
+      cout << "Stack Overflow" <<endl;
+   else {
+      top++;
+      stack[top]=val;
+   }
+}
+
+/* Pop operation */
+void pop() {
+   if (top <= -1)
+   cout << "Stack Underflow" << endl;
+   else {
+      cout << "The popped element is "<< stack[top] <<endl;
+      top--;
+   }
+}
+
+/* Print all the elements of stack */
+void printall() {
+   if (top >= 0) {
+      cout <<"Stack elements are:\n";
+      for(int i=top; i>=0; i--)
+      cout << stack[i] <<"\n";
+      cout <<endl;
+   } else
+   cout <<"Stack is empty";
+}
+
+/* Returns the top element of the stack */
+int peek()
+{
+    if (top < 0) {
+        cout << "Stack is Empty";
+        return 0;
+    }
+    else {
+        int x = stack[top];
+        return x;
+    }
+}
+
+/* Check whether the stack is Empty */
+bool isEmpty()
+{
+    return (top < 0);
+}
+
+int main() {
+   int option, value, top_value = 0;
+   bool check;
+   cout << "IMPLEMENTATION OF STACK USING ARRAY" <<endl;
+   cout << "Options to be performed on stack" <<endl;
+   cout << "1. Push the element to stack" <<endl;
+   cout << "2. Pop the element from stack" <<endl;
+   cout << "3. Print all the element of stack" <<endl;
+   cout << "4. Peek - get the top element of the stack" << endl;
+   cout << "5. Check whether the stack is empty or not?" <<endl;
+   cout << "6. Exit"<<endl;
+   while (1) {
+      cout << "Enter option: " <<endl;
+      cin >> option;
+      switch (option) {
+         case 1: {
+            cout <<"Enter value to be pushed:"<<endl;
+            cin >>value;
+            push(value);
+            break;
+         }
+         case 2: {
+            pop();
+            break;
+         }
+         case 3: {
+            printall();
+            break;
+         }
+         case 4: {
+             top_value = peek();
+             cout <<" The top element of the stack is " << top_value <<endl;
+             break;
+         }
+         case 5: {
+             check = isEmpty();
+             if (check) {
+                 cout << " Stack is empty" <<endl;
+             } else {
+                 cout << " Stack is not empty" <<endl;
+             }
+             break;
+         }
+         case 6: {
+            cout<<"Exit"<<endl;
+            exit(0);
+            break;
+         }
+         default: {
+            cout<<"Invalid Choice"<<endl;
+         }
+      }
+   }
+   return 0;
+}
+
+OUTPUT:
+ make -s
+ ./main
+IMPLEMENTATION OF STACK USING ARRAY
+Options to be performed on stack
+1. Push the element to stack
+2. Pop the element from stack
+3. Print all the element of stack
+4. Peek - get the top element of the stack
+5. Check whether the stack is empty or not?
+6. Exit
+Enter option:
+1
+Enter value to be pushed:
+10
+Enter option:
+1
+Enter value to be pushed:
+23
+Enter option:
+1
+Enter value to be pushed:
+34
+Enter option:
+1
+Enter value to be pushed:
+55
+Enter option:
+3
+Stack elements are:
+55
+34
+23
+10
+
+Enter option:
+4
+ The top element of the stack is 55
+Enter option:
+5
+ Stack is not empty
+Enter option:
+2
+The popped element is 55
+Enter option:
