@@ -1,0 +1,222 @@
+############# BINARY SEARCH TREE ###############
+#include <iostream>
+#include <string.h>
+#include <stdlib.h>
+using namespace std;
+
+struct Node
+{
+  int data;
+  char book_name[32];
+  char book_author[32];
+  int price;
+  struct Node *leftChild;
+  struct Node *rightChild;
+};
+
+struct Node *newNode(int data, char * book_name, char * book_author, int price);
+struct Node* insertNode(struct Node* root, int data, char * book_name, char * book_author, int price);
+struct Node* minValueNode(struct Node* curr);
+struct Node* deleteNode(struct Node* root, int data);
+struct Node *searchNode(struct Node* root,int data);
+void inorder(struct Node* root);
+#include "bst.h"
+
+struct Node *newNode(int data, char * book_name, char * book_author, int price){
+   struct Node *tempNode = (struct Node *)malloc(sizeof(struct Node));
+    tempNode->data = data;
+  strcpy(tempNode->book_name, book_name);
+  strcpy(tempNode->book_author, book_author);
+  tempNode->price = price;
+   tempNode->leftChild = tempNode->rightChild = NULL;
+   return tempNode;
+}
+struct Node* insertNode(struct Node* root, int data, char * book_name, char * book_author, int price){
+   if (root == NULL)
+     return newNode(data, book_name, book_author, price);
+      if (data < root->data)
+         root->leftChild = insertNode(root->leftChild, data, book_name, book_author, price);
+      else if (data > root->data)
+         root->rightChild = insertNode(root->rightChild, data, book_name, book_author, price);
+   return root;
+}
+
+// Helper function to find minimum value node in the subtree rooted at `curr`
+struct Node* minValueNode(struct Node* curr)
+{
+    while (curr->leftChild != NULL) {
+        curr = curr->leftChild;
+    }
+    return curr;
+}
+struct Node* deleteNode(struct Node* root, int data) {
+   if (root == NULL) return root;
+      if (data < root->data)
+         root->leftChild = deleteNode(root->leftChild, data);
+      else if (data > root->data)
+         root->rightChild = deleteNode(root->rightChild, data);
+      else {
+        if (root->leftChild == NULL and root -> rightChild == NULL) return NULL;
+        else if ( root-> leftChild == NULL) {
+          struct Node * tempNode = root-> rightChild;
+          free(root);
+          return tempNode;
+        } else if (root -> rightChild == NULL) {
+          struct Node * tempNode = root-> leftChild;
+          free(root);
+          return tempNode;
+        }
+        // Node with two children .
+        // Get the inorder successor (smallest in the right subtree)
+        struct Node *tempNode = minValueNode(root->rightChild);
+        //Copy the inorder successor's content to the node
+            root->data = tempNode->data;
+  strcpy(root->book_name, tempNode->book_name);
+  strcpy(root->book_author, tempNode->book_author);
+  root->price = tempNode->price;
+        //Delete the inorder successor
+        root->rightChild = deleteNode(root->rightChild, tempNode->data);
+      }
+  return root;
+}
+
+//Search an element
+struct Node *searchNode(struct Node* root,int data) {
+  if(root == NULL || root->data == data)
+            return root;
+    // data is greater than root's data
+        if(root->data < data)
+            return searchNode(root->rightChild, data);
+        // data is smaller than root's data
+        return searchNode(root->leftChild,data);
+}
+
+void inorder(struct Node* root){
+        if(root == NULL)
+            return;
+        inorder(root->leftChild);
+        cout << root->data << " ";
+        inorder(root->rightChild);
+    }
+#include "bst.h"
+
+int main()
+{
+  int option = 0, book_id;
+  char book_title[32];
+  char book_author[32];
+  int book_price = 0;
+  struct Node *root = NULL;
+  struct Node *find_element = NULL;
+  struct Node *delete_element = NULL;
+  cout << "*****DIRECTORY OF BOOK NAMES******\n";
+  while (1)
+    {
+      cout << "To add a new book, click 1" << endl <<
+    "To remove a book, click 2" << endl << "Search a book in the directory, click 3" << endl;
+      cin >> option;
+      switch (option)
+    {
+    case 1:
+      cout << "Please give the book details to be added to the Directory"
+        << endl;
+      cout << "Enter the Unique Book ID" << endl;
+      cin >> book_id;
+      cout << "Enter the book name" << endl;
+      cin >> book_title;
+      cout << "Enter the book author" << endl;
+      cin >> book_author;
+      cout << "Enter the book price" << endl;
+      cin >> book_price;
+    root = insertNode(root, book_id, book_title, book_author, book_price);
+    inorder(root);
+      break;
+    case 2:
+      cout << "Remove the book" << endl;
+      cout << "Please give the book id to be removed" << endl;
+      cin >> book_id;
+    inorder(root);
+      root = deleteNode(root, book_id);
+    inorder(root);
+      break;
+    case 3:
+      cout << "Please give the book id to search" << endl;
+      cin >> book_id;
+      if (searchNode(root, book_id)) {
+      cout << "The book is present" <<endl;
+    } else {
+      cout << "The book is not present" << endl;
+    }
+      break;
+    default:
+      cout << "Not a valid option" << endl;
+      break;
+    }
+    }
+}
+
+
+OUTPUT:
+
+ make -s
+ ./main
+*****DIRECTORY OF BOOK NAMES******
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+1
+Please give the book details to be added to the Directory
+Enter the Unique Book ID
+110
+Enter the book name
+Secret_letters
+Enter the book author
+Robin_Sharma
+Enter the book price
+200
+110
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+1
+Please give the book details to be added to the Directory
+Enter the Unique Book ID
+111
+Enter the book name
+Harry_potter
+Enter the book author
+J.K.Rowling
+Enter the book price
+200
+110 111
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+3
+Please give the book id to search
+110
+The book is present
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+3
+Please give the book id to search
+114
+The book is not present
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+2
+Remove the book
+Please give the book id to be removed
+110
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
+3
+Please give the book id to search
+110
+The book is not present
+To add a new book, click 1
+To remove a book, click 2
+Search a book in the directory, click 3
