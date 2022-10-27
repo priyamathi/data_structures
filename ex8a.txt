@@ -1,0 +1,324 @@
+#####MIN MAX HEAP
+#include<iostream>
+#include<math.h>
+using namespace std;
+
+class MinMax{
+    private:
+        int *arr;
+        int size;
+        int *index;
+        int capacity;
+    public:
+        MinMax(int);
+        bool insert(int );
+        int deleteMin();
+        int deleteMax();
+        int findLevel(int);
+        int parent(int);
+        int grandparent(int);
+        int grandchild(int);
+        void percolateDownMax(int);
+        void percolateDownMin(int);
+        void percolateUpMin(int,int);
+        void percolateUpMax(int,int);
+        void display();
+};
+
+MinMax::MinMax(int length){
+    capacity = length+1;
+    size = 0;
+    arr = new int[capacity];
+}
+
+int MinMax::parent(int i){
+    return i/2;
+}
+
+int MinMax::grandparent(int i){
+    return i/4;
+}
+
+int MinMax::grandchild(int i){
+    return 4*i;
+}
+
+int MinMax::findLevel(int ind)
+{
+    int i=0;
+    while(!(pow(2,i) <= ind && ind<pow(2,i+1))){
+        i++;
+    }
+    cout<<ind<<"  "<< i%2;
+    if(i%2 == 0)
+        return 0;
+    else
+        return 1;
+}
+
+void MinMax::percolateUpMax(int index,int level){
+    if(index==1)
+        return;
+    int p = parent(index);
+    int gp = grandparent(index);
+    int temp;
+    if(arr[p] < arr[index]){
+        temp = arr[p];
+        arr[p] = arr[index];
+        arr[index] = temp;
+        percolateUpMin(p,(level+1)%2);
+    }
+    else if(arr[gp] > arr[index]){
+        temp = arr[gp];
+        arr[gp] = arr[index];
+        arr[index] = temp;
+        percolateUpMax(gp,level);
+    }
+    return;
+}
+
+void MinMax::percolateUpMin(int index,int level){
+    if(index==1)
+        return;
+    int p = parent(index);
+    int gp = grandparent(index);
+    int temp;
+    if(arr[p] > arr[index]){
+        temp = arr[p];
+        arr[p] = arr[index];
+        arr[index] = temp;
+        percolateUpMax(p,(level+1)%2);
+    }
+    else if(arr[gp] < arr[index] ){
+        temp = arr[gp];
+        arr[gp] = arr[index];
+        arr[index] = temp;
+        percolateUpMin(gp,level);
+    }
+    return;
+}
+
+void MinMax::percolateDownMin(int index){
+    int gc = grandchild(index);
+    if(gc > size)
+        return;
+    int min = arr[gc];
+    int pos=gc;
+    for(int i=gc+1;i<=size&&i<gc+4;i++){
+        if(min > arr[i]){
+            min = arr[i];
+            pos = i;
+        }
+    }
+    if(arr[pos] < arr[index]){
+        int temp;
+        temp = arr[index];
+        arr[index] = arr[pos];
+        arr[pos] = temp;
+        percolateDownMin(pos);
+    }
+    return;
+}
+
+void MinMax::percolateDownMax(int index){
+    int gc = grandchild(index);
+    if(gc > size)
+        return;
+    int max = arr[gc];
+    int pos = gc;
+    for(int i=gc+1;i<=size&&i<gc+4;i++){
+        if(arr[i] > max){
+            max = arr[i];
+            pos = i;
+        }
+    }
+    if(arr[pos] > arr[index]){
+        int temp;
+        temp = arr[index];
+        arr[index] = arr[pos];
+        arr[pos] = temp;
+        percolateDownMax(pos);
+    }
+    return;
+}
+
+void MinMax::display(){
+    cout <<"\n########################\n";
+    for(int i=1;i<=size;i++){
+        cout<<arr[i]<<" ";
+    }
+    cout <<"\n########################\n";
+}
+
+bool MinMax::insert(int ele){
+    size = size +1;
+    if(size==1){
+        arr[size]=ele;
+        return true;
+    }
+    else{
+        int level = findLevel(size);
+        arr[size]=ele;
+        switch(level){
+            case 0:
+                percolateUpMax(size,level);
+                break;
+            case 1:
+                percolateUpMin(size,level);
+                break;
+        }
+    }
+    return true;
+}
+
+int MinMax::deleteMin(){
+    int min = arr[1];
+    arr[1] = arr[size];
+    size--;
+    percolateDownMin(1);
+    return min;
+}
+
+int MinMax::deleteMax(){
+    int max;
+    if(arr[2] > arr[3]){
+        max = arr[2];
+        arr[2] = arr[size];
+        size = size - 1;
+        percolateDownMax(2);
+    }
+    else{
+        max = arr[3];
+        arr[3] = arr[size];
+        size = size-1;
+        percolateDownMax(3);
+    }
+    return max;
+}
+
+int main(){
+    int size;
+    cout<<"Enter the size of heap: ";
+    cin>>size;
+    int ele,choice;
+    MinMax heap(size);
+    do{
+        cout<<"1. Insert\n2. Delete Minimum\n3. Delete maximum\n4. Display\n";
+        cout<<"Enter your choice : ";
+        cin>>choice;
+        switch(choice){
+            case 1:
+                cout<<"Enter an element to insert : ";
+                cin>>ele;
+                heap.insert(ele);
+                heap.display();
+                break;
+            case 2:
+                cout<<"delete min"<<endl;
+                heap.deleteMin();
+                heap.display();
+                break;
+            case 3:
+                cout<<"delete max"<<endl;
+                heap.deleteMax();
+                heap.display();
+                break;
+            case 4:
+                cout<<"\n----------DISPLAY-------\n";
+                heap.display();
+                break;
+        }
+    }while(choice>0 && choice<5);
+}
+
+
+
+~/MinMax$ c++ MinMax.cpp
+~/MinMax$ ./a.out
+Enter the size of heap: 10
+1. Insert
+2. Delete Minimum
+3. Delete maximum
+4. Display
+Enter your choice : 1
+Enter an element to insert : 50
+
+########################
+50
+########################
+1. Insert
+2. Delete Minimum
+3. Delete maximum
+4. Display
+Enter your choice : 1
+Enter an element to insert : 45
+2  1
+########################
+45 50
+########################
+1. Insert
+2. Delete Minimum
+3. Delete maximum
+4. Display
+Enter your choice : 1
+Enter an element to insert : 43
+3  1
+########################
+43 50 45
+########################
+1. Insert
+2. Delete Minimum
+3. Delete maximum
+4. Display
+Enter your choice : 1
+Enter an element to insert : 40
+4  0
+########################
+40 50 45 43
+########################
+1. Insert
+2. Delete Minimum
+3. Delete maximum
+4. Display
+Enter your choice : 1
+Enter an element to insert : 23
+5  0
+########################
+23 50 45 43 40
+########################
+1. Insert
+2. Delete Minimum
+3. Delete maximum
+4. Display
+Enter your choice : 4
+
+----------DISPLAY-------
+
+########################
+23 50 45 43 40
+########################
+1. Insert
+2. Delete Minimum
+3. Delete maximum
+4. Display
+Enter your choice : 2
+delete min
+
+########################
+40 50 45 43
+########################
+1. Insert
+2. Delete Minimum
+3. Delete maximum
+4. Display
+Enter your choice : 3
+delete max
+
+########################
+40 43 45
+########################
+1. Insert
+2. Delete Minimum
+3. Delete maximum
+4. Display
+Enter your choice :

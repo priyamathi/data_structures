@@ -1,0 +1,353 @@
+########DEAPS
+#include<iostream>
+#include<math.h>
+using namespace std;
+
+class Deap{
+    private:
+        int *arr;
+        int size;
+        int capacity;
+    public:
+        Deap();
+        Deap(int);
+        int maxHead(int);
+        int insert(int);
+        void deleteMin();
+        void deleteMax();
+        void shiftDownMin();
+        void shiftDownMax();
+        void minInsert(int,int);
+        void maxInsert(int,int);
+        int minPartner(int);
+        int maxPartner(int);
+        void display();
+};
+
+Deap::Deap(){
+    arr = new int[10];
+    size = 0;
+    capacity = 10;
+}
+
+Deap::Deap(int length){
+    capacity = length;
+    size = 0;
+    arr = new int[capacity];
+}
+
+int Deap::maxHead(int pos){
+    while(pos>3){
+        pos = pos/2;
+    }
+    if(pos==3)//maxHeap
+        return 1;
+    else//minHeap
+        return 0;
+}
+
+int Deap::maxPartner(int i){
+    int partner;
+    partner = log(i)/log(2);
+    partner = pow(2,floor(partner)-1);
+    partner = i+partner;
+    return partner;
+}
+
+int Deap::minPartner(int i){
+    int partner;
+    partner = log(i)/log(2);
+    partner = pow(2,floor(partner)-1);
+    partner = i - partner;
+    return partner;
+}
+
+void Deap::maxInsert(int pos,int ele){
+    int parent = pos/2;
+    while(pos!=3){
+        if(ele > arr[parent]){
+            arr[pos] = arr[parent];
+            pos = parent;
+            parent = pos/2;
+        }
+        else
+            break;
+    }
+    arr[pos] = ele;
+}
+
+void Deap::minInsert(int pos,int ele){
+    int parent = pos/2;
+    while(pos!=2){
+        if(ele < arr[parent]){
+            arr[pos] = arr[parent];
+            pos = parent;
+            parent = pos/2;
+        }
+        else{
+            break;
+        }
+    }
+    arr[pos] = ele;
+}
+
+int Deap::insert(int element){
+    if(size==capacity)
+        return 0;
+    size = size+1;
+    if(size==1){
+        arr[2] = element;
+        return 1;
+    }
+    int pos,min,max;
+    pos = size+1;
+    switch(maxHead(pos)){
+        case 0: //minHeap
+            max = maxPartner(pos);
+            if(max > size+1)
+                max = max/2;
+            if(element > arr[max]){
+                arr[pos] = arr[max];
+                maxInsert(max,element);
+            }
+            else{
+                minInsert(pos,element);
+            }
+            break;
+        case 1: // maxHeap
+            min = minPartner(pos);
+            if(element < arr[min]){
+                arr[pos] = arr[min];
+                minInsert(min,element);
+            }
+            else{
+                maxInsert(pos,element);
+            }
+            break;
+    }
+    return 1;
+}
+
+void Deap::shiftDownMin(){
+    int parent = 2;
+    int child = 2*parent;
+    while(child < size+1){
+        if(arr[child] > arr[child+1])
+            child = child+1;
+        if(arr[child] < arr[parent]){
+            int temp = arr[parent];
+            arr[parent] = arr[child];
+            arr[child] = temp;
+        }
+        parent = child;
+        child = 2*parent;
+    }
+    int k = maxPartner(child);
+    if(arr[k] < arr[child]){
+        int temp = arr[child];
+        arr[child] = arr[k];
+        arr[k] = temp;
+    }
+}
+
+void Deap::deleteMin(){
+    cout<<"Size of the elements in the array "<<size<<endl;
+    int minElt = arr[2];
+    int lastElt = arr[size+1];
+    cout<<"MIN ELEMENT : "<<minElt<<endl;
+    cout<<"LAST ELEMENT : "<<lastElt<<endl;
+    arr[2] = lastElt;
+    size = size-1;
+    shiftDownMin();
+}
+
+void Deap::shiftDownMax(){
+    int parent = 3;
+    int child = 2*parent;
+    while(child < size+1){
+        if(arr[child] < arr[child+1])
+            child = child+1;
+        if(arr[child] > arr[parent]){
+            int temp = arr[parent];
+            arr[parent] = arr[child];
+            arr[child] = temp;
+        }
+        parent = child;
+        child = 2*parent;
+    }
+    int k = minPartner(child);
+    if(arr[k] > arr[child]){
+        int temp = arr[child];
+        arr[child] = arr[k];
+        arr[k] = temp;
+    }
+}
+
+void Deap::deleteMax(){
+    cout<<"Size of the elements in the array "<<size<<endl;
+    int maxElt = arr[3];
+    int lastElt = arr[size+1];
+    cout<<"MAX ELEMENT : "<<maxElt<<endl;
+    cout<<"LAST ELEMENT : "<<lastElt<<endl;
+    arr[3] = lastElt;
+    size = size-1;
+    shiftDownMax();
+}
+
+void Deap::display(){
+    for(int i=2;i<=size+1;i++)
+        cout<<arr[i]<<" ";
+}
+int main(){
+  int option = 0;
+  Deap deap(13);
+  int value = 0;
+  cout<<"********DEAPS OPERATIONS*********\n";
+  while (1)
+    {
+      cout << "Insert, click 1" << endl <<
+        "Delete min, click 2" << endl << "Delete max , click 3" << endl << "Print all, click 4" << endl;
+      cin >> option;
+      switch (option)
+        {
+        case 1:
+          cout << "Enter the value to insert"
+            << endl;
+          cin >> value;
+ deap.insert(value);
+          break;
+        case 2:
+          deap.deleteMin();
+          break;
+        case 3:
+          deap.deleteMax();
+          break;
+  case 4:
+    deap.display();
+    break;
+        default:
+          cout << "Not a valid option" << endl;
+          break;
+        }
+    }
+}
+
+OUTPUT:
+~/Deapsc$ c++ deaps.cpp
+~/Deapsc$ ./a.out
+********DEAPS OPERATIONS*********
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+1
+Enter the value to insert
+3
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+1
+Enter the value to insert
+56
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+1
+Enter the value to insert
+ 10
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+1
+Enter the value to insert
+6
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+1
+Enter the value to insert
+45
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+1
+Enter the value to insert
+50
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+1
+Enter the value to insert
+11
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+1
+Enter the value to insert
+33
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+1
+Enter the value to insert
+7
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+1
+Enter the value to insert
+21
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+1
+Enter the value to insert
+13
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+4
+3 56 10 6 45 50 11 33 7 21 13
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+2
+Size of the elements in the array 11
+MIN ELEMENT : 3
+LAST ELEMENT : 13
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+4
+6 56 10 7 45 50 11 33 13 21
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+3
+Size of the elements in the array 10
+MAX ELEMENT : 56
+LAST ELEMENT : 21
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
+4
+6 50 10 7 45 21 11 33 13
+Insert, click 1
+Delete min, click 2
+Delete max , click 3
+Print all, click 4
