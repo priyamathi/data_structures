@@ -1,0 +1,319 @@
+MIN HEAP
+
+import java.util.*;
+class MinHeap {
+    private int[] Heap;
+    private int size;
+    private int maxsize;
+   private static final int FRONT = 1;
+      public MinHeap(int maxsize) {
+        this.maxsize = maxsize;
+        this.size = 0;
+        Heap = new int[maxsize];
+    }
+    // Returning the position of
+    // the parent for the node currently
+    // at pos
+    private int parent(int i) {
+      return i / 2;
+      }
+    // Returning the position of the
+    // left child for the node currently at pos
+    private int leftChild(int i) {
+      return (2 * i) ;
+      }
+    // Returning the position of
+    // the right child for the node currently
+    // at pos
+    private int rightChild(int i)
+    {
+        return (2 * i) + 1;
+    }
+    // Returning true if the passed
+    // node is a leaf node
+    private boolean isLeaf(int i)
+    {
+
+        if (rightChild(i) >= size || leftChild(i) >= size) {
+            return true;
+        }
+
+        return false;
+    }
+  // To swap two nodes of the heap
+    private void swap(int fpos, int spos)
+    {
+
+        int tmp;
+        tmp = Heap[fpos];
+        Heap[fpos] = Heap[spos];
+        Heap[spos] = tmp;
+    }
+      // To insert a node into the heap
+    public void insert(int element)
+    {
+
+        if (size >= maxsize) {
+            return;
+        }
+
+        Heap[++size] = element;
+        int current = size;
+
+        while (Heap[current] < Heap[parent(current)]) {
+            swap(current, parent(current));
+            current = parent(current);
+        }
+    }
+    // To print the contents of the heap
+    public void print_as_heap()
+    {
+        for (int i = 1; i <= size / 2; i++) {
+
+            // Printing the parent and both childrens
+            System.out.print(
+                " PARENT : " + Heap[i]
+                + " LEFT CHILD : " + Heap[2 * i]
+                + " RIGHT CHILD :" + Heap[2 * i + 1]);
+
+            // By here new line is required
+            System.out.println();
+        }
+    }
+      // To heapify the node at pos
+    private void minHeapify(int pos)
+    {
+
+        // If the node is a non-leaf node and greater
+        // than any of its child
+        if (!isLeaf(pos)) {
+            if (Heap[pos] > Heap[leftChild(pos)]
+                || Heap[pos] > Heap[rightChild(pos)]) {
+
+                // Swap with the left child and heapify
+                // the left child
+                if (Heap[leftChild(pos)]
+                    < Heap[rightChild(pos)]) {
+                    swap(pos, leftChild(pos));
+                    minHeapify(leftChild(pos));
+                }
+
+                // Swap with the right child and heapify
+                // the right child
+                else {
+                    swap(pos, rightChild(pos));
+                    minHeapify(rightChild(pos));
+                }
+            }
+        }
+    }
+     // To remove and return the minimum
+    // element from the heap
+      public int remove()
+    {
+
+        int popped = Heap[FRONT];
+        Heap[FRONT] = Heap[size--];
+        minHeapify(FRONT);
+        return popped;
+    }
+      // To return the minimum
+    // element from the heap
+      public int peek()
+    {
+        return Heap[FRONT];
+    }
+  public static void main(String[] args) {
+    int value = 0, option =0;
+    Scanner myObj = new Scanner(System.in);
+    int heap_size = 100;
+    MinHeap min_heap=new MinHeap(heap_size);
+    while(true) {
+      System.out.println("1.Insert\n2.Delete Min\n3.Print the min heap\n4.Find minimum\n");
+       System.out.println("Enter the option");
+      option = Integer.parseInt(myObj.nextLine());
+      switch (option) {
+        case 1:
+          System.out.println("*******INSERT*******");
+          System.out.println("Enter the values to add");
+          value = Integer.parseInt(myObj.nextLine());
+          try {
+          min_heap.insert(value);
+            } catch (Exception e) {
+          e.printStackTrace();
+        }
+          break;
+        case 2:
+          System.out.println("*******DELETE MIN*******");
+          value = min_heap.remove();
+          System.out.println("Removed min value : "+value);
+          break;
+        case 3:
+          System.out.println("*******MIN HEAP*******");
+          min_heap.print_as_heap();
+          break;
+        case 4:
+          System.out.println("*******FIND MINIMUM*******");
+          value = min_heap.peek();
+          System.out.println(" Minimum value : "+value);
+          break;
+        default:
+          System.out.println("Wrong Option");
+          break;
+      }
+  }
+  }
+}
+
+#############################################################
+~/MinHeapUsingJava$ javac MinHeap.java
+~/MinHeapUsingJava$ java MinHeap
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+56
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+3
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+45
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+13
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+6
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+34
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+89
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+10
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+33
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+11
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+3
+*******MIN HEAP*******
+ PARENT : 3 LEFT CHILD : 6 RIGHT CHILD :34
+ PARENT : 6 LEFT CHILD : 10 RIGHT CHILD :11
+ PARENT : 34 LEFT CHILD : 45 RIGHT CHILD :89
+ PARENT : 10 LEFT CHILD : 56 RIGHT CHILD :33
+ PARENT : 11 LEFT CHILD : 13 RIGHT CHILD :0
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+4
+*******FIND MINIMUM*******
+ Minimum value : 3
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+2
+*******DELETE MIN*******
+Removed min value : 3
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
+3
+*******MIN HEAP*******
+ PARENT : 6 LEFT CHILD : 10 RIGHT CHILD :34
+ PARENT : 10 LEFT CHILD : 13 RIGHT CHILD :11
+ PARENT : 34 LEFT CHILD : 45 RIGHT CHILD :89
+ PARENT : 13 LEFT CHILD : 56 RIGHT CHILD :33
+1.Insert
+2.Delete Min
+3.Print the min heap
+4.Find minimum
+
+Enter the option
