@@ -1,0 +1,291 @@
+##########LEFTISH MIN HEAP
+import java.io.*;
+import java.util.*;
+
+class LeftishHeap {
+  LeftistNode root;
+  LeftishHeap()
+  {
+    root = null;
+  }
+  /* Insert item x into the priority queue, maintaining
+  heap order.*/
+  void insert(int x)
+  {
+    root = merge(new LeftistNode(x), root);
+  }
+
+LeftistNode merge(LeftistNode h1, LeftistNode h2)
+{
+    if (h1 == null)
+        return h2;
+    if (h2 == null)
+        return h1;
+   if (h1.element < h2.element)
+        return merge1(h1, h2);
+    else
+        return merge1(h2, h1);
+}
+LeftistNode merge1(LeftistNode h1,
+                                 LeftistNode h2)
+{
+    if (h1.left == null)
+        h1.left = h2;
+    else
+    {
+        h1.right = merge(h1.right, h2);
+        if (h1.left.dist < h1.right.dist)
+            swapChildren(h1);
+        h1.dist = h1.right.dist + 1;
+    }
+    return h1;
+}
+  void swapChildren(LeftistNode t)
+{
+    LeftistNode tmp = t.left;
+    t.left = t.right;
+    t.right = tmp;
+}
+  boolean isEmpty()
+  {
+    return root == null;
+  }
+  int findMin()
+  {
+    return root.element;
+  }
+  void deleteMin()
+  {
+    LeftistNode oldRoot = root;
+    root = merge(root.left, root.right);
+    oldRoot = null;
+  }
+  private void inOrder(LeftistNode root)
+  {
+    if (root != null)
+    {
+        inOrder(root.left);
+        System.out.print(root.element+" ");
+        inOrder(root.right);
+    }
+  }
+  class LeftistNode
+  {
+    int element;
+    LeftistNode left;
+    LeftistNode right;
+    int dist;
+    LeftistNode(int element1) {
+      element = element1;
+      right = null;
+      left = null;
+      dist = 0;
+    }
+    LeftistNode(int element1, LeftistNode lt1,
+                LeftistNode rt1, int np)
+    {
+        this.element = element1;
+        right = rt1;
+        left = lt1;
+        dist = np;
+    }
+}
+  public static void main(String[] args) {
+  int value = 0, option =0;
+    Scanner myObj = new Scanner(System.in);
+    LeftishHeap leftist_heap=new LeftishHeap();
+    while(true) {
+      System.out.println("\n1.Insert\n2.Delete Min\n3.Print the leftist heap\n4.Find minimum\n");
+       System.out.println("Enter the option");
+      option = Integer.parseInt(myObj.nextLine());
+      switch (option) {
+        case 1:
+          System.out.println("*******INSERT*******");
+          System.out.println("Enter the values to add");
+          value = Integer.parseInt(myObj.nextLine());
+          try {
+          leftist_heap.insert(value);
+            } catch (Exception e) {
+          e.printStackTrace();
+        }
+          break;
+        case 2:
+          System.out.println("*******DELETE MIN*******");
+                  leftist_heap.deleteMin();
+          break;
+        case 3:
+          System.out.println("*******LEFTIST HEAP*******");
+          leftist_heap.inOrder(leftist_heap.root);
+          break;
+        case 4:
+          System.out.println("*******FIND MINIMUM*******");
+          value = leftist_heap.findMin();
+          System.out.println(" Minimum value : "+value);
+          break;
+        default:
+          System.out.println("Wrong Option");
+          break;
+      }
+  }
+  }
+}
+
+
+OUTPUT:
+~/LeftistHeap$ javac LeftistHeap.java
+~/LeftistHeap$ java LeftistHeap.java
+
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+12
+
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+3
+*******LEFTIST HEAP*******
+12
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+34
+
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+3
+*******LEFTIST HEAP*******
+34 12
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+50
+
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+3
+*******LEFTIST HEAP*******
+34 12 50
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+48
+
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+3
+*******LEFTIST HEAP*******
+34 12 50 48
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+35
+
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+3
+*******LEFTIST HEAP*******
+34 12 50 48 35
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+11
+
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+3
+*******LEFTIST HEAP*******
+34 12 50 48 35 11
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+4
+*******FIND MINIMUM*******
+ Minimum value : 11
+
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+2
+*******DELETE MIN*******
+
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option
+3
+*******LEFTIST HEAP*******
+34 12 50 48 35
+1.Insert
+2.Delete Min
+3.Print the leftist heap
+4.Find minimum
+
+Enter the option

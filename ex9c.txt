@@ -1,0 +1,291 @@
+Separate Chaining
+
+import java.io.*;
+import java.util.*;
+
+class SeparateHashTable {
+  int table_size = 10;
+  HashNode[] chain = new HashNode[table_size];
+  class HashNode {
+    int element;
+    HashNode next;
+    HashNode(int element1) {
+      element = element1;
+      next = null;
+    }
+  }
+  void insert(int value)
+  {
+    //create a newnode with value
+    HashNode newNode = new HashNode(value);
+
+    //calculate hash key
+    int key = value % table_size;
+
+    //check if chain[key] is empty
+    if(chain[key] == null)
+        chain[key] = newNode;
+    //collision
+    else
+    {
+        //add the node at the end of chain[key].
+        HashNode temp = chain[key];
+        while(temp.next != null)
+        {
+            temp = temp.next;
+        }
+        temp.next = newNode;
+    }
+  }
+
+  int search(int value) {
+    int key = value % table_size;
+    HashNode temp = chain[key];
+    while(temp != null) {
+      if(temp.element == value) {
+        return 1;
+      }
+      temp = temp.next;
+    }
+    return 0;
+  }
+  void print() {
+    for(int i =0; i< table_size; i++) {
+      HashNode temp = chain[i];
+      System.out.print("\nchain["+i+"] -->");
+      while(temp != null) {
+        System.out.print(temp.element+" --");
+        temp = temp.next;
+      }
+    }
+  }
+  int delete (int value) {
+    int key = value % table_size;
+    HashNode temp = chain[key], deleteNode;
+    if(temp != null) {
+      System.out.println("temp.element:" +temp.element);
+      if(temp.element == value) {
+        System.out.println("Entered temp.el");
+        deleteNode = temp;
+        temp = temp.next;
+        deleteNode = null;
+        return 1;
+      }
+      else {
+        while(temp.next != null) {
+          if(temp.next.element == value) {
+            deleteNode = temp.next;
+            temp.next = temp.next.next;
+            deleteNode = null;
+            return 1;
+          }
+          temp = temp.next;
+        }
+     }
+    }
+    return 0;
+  }
+  public static void main(String[] args) {
+   int value = 0, option =0;
+    int result;
+    Scanner myObj = new Scanner(System.in);
+    SeparateHashTable hashtable=new SeparateHashTable();
+    while(true) {
+      System.out.println("\n1.Insert\n2.Delete\n3.Print the hash table\n4.Search\n");
+       System.out.println("Enter the option");
+      option = Integer.parseInt(myObj.nextLine());
+      switch (option) {
+        case 1:
+          System.out.println("*******INSERT*******");
+          System.out.println("Enter the values to add");
+          value = Integer.parseInt(myObj.nextLine());
+          try {
+          hashtable.insert(value);
+            } catch (Exception e) {
+          e.printStackTrace();
+        }
+          break;
+        case 2:
+          System.out.println("*******DELETE*******");
+          System.out.println("Enter the values to delete");
+          value = Integer.parseInt(myObj.nextLine());
+                      result = hashtable.delete(value);
+          if(result == 1) {
+             System.out.println("Deleted successfully");
+            } else {
+              System.out.println("The item to be deleted is not present");
+              }
+          break;
+        case 3:
+          System.out.println("*******SEPARATE CHAINING HASH TABLE*******");
+          hashtable.print();
+          break;
+        case 4:
+          System.out.println("*******SEARCH*******");
+          System.out.println("Enter the values to search");
+          value = Integer.parseInt(myObj.nextLine());
+          result = hashtable.search(value);
+          if(result == 1) {
+            System.out.println("The value is present");
+            } else {
+              System.out.println("The value is not present");
+              }
+          break;
+        default:
+          System.out.println("Wrong Option");
+          break;
+      }
+  }
+  }
+  }
+
+
+OUTPUT:
+
+~/SeparateHash$ javac SeparateHashTable.java
+~/SeparateHash$ java SeparateHashTable.java
+
+1.Insert
+2.Delete
+3.Print the hash table
+4.Search
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+23
+
+1.Insert
+2.Delete
+3.Print the hash table
+4.Search
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+33
+
+1.Insert
+2.Delete
+3.Print the hash table
+4.Search
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+43
+
+1.Insert
+2.Delete
+3.Print the hash table
+4.Search
+
+Enter the option
+3
+*******SEPARATE CHAINING HASH TABLE*******
+
+chain[0] -->
+chain[1] -->
+chain[2] -->
+chain[3] -->23 --33 --43 --
+chain[4] -->
+chain[5] -->
+chain[6] -->
+chain[7] -->
+chain[8] -->
+chain[9] -->
+1.Insert
+2.Delete
+3.Print the hash table
+4.Search
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+55
+
+1.Insert
+2.Delete
+3.Print the hash table
+4.Search
+
+Enter the option
+4
+*******SEARCH*******
+Enter the values to search
+55
+The value is present
+
+1.Insert
+2.Delete
+3.Print the hash table
+4.Search
+
+Enter the option
+4
+*******SEARCH*******
+Enter the values to search
+56
+The value is not present
+
+1.Insert
+2.Delete
+3.Print the hash table
+4.Search
+
+Enter the option
+3
+*******SEPARATE CHAINING HASH TABLE*******
+
+chain[0] -->
+chain[1] -->
+chain[2] -->
+chain[3] -->23 --33 --43 --
+chain[4] -->
+chain[5] -->55 --
+chain[6] -->
+chain[7] -->
+chain[8] -->
+chain[9] -->
+1.Insert
+2.Delete
+3.Print the hash table
+4.Search
+
+Enter the option
+2
+*******DELETE*******
+Enter the values to delete
+33
+temp.element:23
+Deleted successfully
+
+1.Insert
+2.Delete
+3.Print the hash table
+4.Search
+
+Enter the option
+3
+*******SEPARATE CHAINING HASH TABLE*******
+
+chain[0] -->
+chain[1] -->
+chain[2] -->
+chain[3] -->23 --43 --
+chain[4] -->
+chain[5] -->55 --
+chain[6] -->
+chain[7] -->
+chain[8] -->
+chain[9] -->
+1.Insert
+2.Delete
+3.Print the hash table
+4.Search
+
+Enter the option

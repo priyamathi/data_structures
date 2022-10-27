@@ -1,0 +1,236 @@
+Quadratic Probing
+
+import java.io.*;
+import java.util.*;
+
+class QuadraticHash {
+  int array[];
+  int table_size;
+  QuadraticHash(int tsize) {
+    table_size = tsize;
+    array = new int[table_size];
+    for (int i = 0; i < table_size; i++) {
+      array[i] = -1;
+    }
+  }
+  void insert(int value) {
+    int key = value % table_size;
+    if(array[key] == -1) {
+        array[key] = value;
+    } else {
+        // If there is a collision iterating through all
+        // possible quadratic values
+        for (int j = 0; j < table_size; j++) {
+        // Computing the new hash value
+        key = (value + j * j) % table_size;
+        if (array[key] == -1) {
+          // Break the loop after inserting the value
+          // in the table
+          array[key] = value;
+          break;
+        }
+      }
+    }
+  }
+  int delete(int value) {
+    int key = value % table_size;
+    if(array[key] == value) {
+        array[key] = -1;
+        return 1;
+    } else {
+        for (int j = 0; j < table_size; j++) {
+        // Computing the new hash value
+        key = (value + j * j) % table_size;
+        if (array[key] == value) {
+          // Break the loop after inserting the value
+          // in the table
+          array[key] = -1;
+          return 1;
+        }
+      }
+    }
+    return 0;
+  }
+  void print() {
+    for (int i = 0; i < table_size; i++) {
+      System.out.print("  "+array[i]);
+    }
+  }
+  int search(int value) {
+  int key = value % table_size;
+    if(array[key] == value) {
+        return 1;
+    } else {
+        for (int j = 0; j < table_size; j++) {
+        // Computing the new hash value
+        key = (value + j * j) % table_size;
+        if (array[key] == value) {
+          // Break the loop after inserting the value
+          // in the table
+          return 1;
+        }
+      }
+    }
+    return 0;
+  }
+  public static void main(String[] args) {
+    int value = 0, option =0, result = 0;
+    Scanner myObj = new Scanner(System.in);
+    QuadraticHash hashtable=new QuadraticHash(10);
+    while(true) {
+      System.out.println("\n1.Insert\n2.Delete\n3.Print the hashtable\n4.Search\n");
+      System.out.println("Enter the option");
+      option = Integer.parseInt(myObj.nextLine());
+      switch (option) {
+        case 1:
+          System.out.println("*******INSERT*******");
+          System.out.println("Enter the values to add");
+          value = Integer.parseInt(myObj.nextLine());
+          try {
+          hashtable.insert(value);
+            } catch (Exception e) {
+          e.printStackTrace();
+        }
+          break;
+        case 2:
+          System.out.println("*******DELETE*******");
+          System.out.println("Enter the values to delete");
+          value = Integer.parseInt(myObj.nextLine());
+          result = hashtable.delete(value);
+          if(result == 1) {
+            System.out.println("Deleted successfully");
+          } else {
+            System.out.println("The item to be deleted is not present");
+          }
+          break;
+        case 3:
+          System.out.println("*******QUADRATIC PROBING HASH TABLE*******");
+          hashtable.print();
+          break;
+        case 4:
+          System.out.println("*******Search*******");
+          System.out.println("Enter the values to search");
+          value = Integer.parseInt(myObj.nextLine());
+          result = hashtable.search(value);
+          if(result == 1) {
+            System.out.println("The element is present");
+          } else {
+            System.out.println("The element is not present");
+          }
+          break;
+        default:
+          System.out.println("Wrong Option");
+          break;
+      }
+  }
+  }
+}
+
+OUTPUT:
+
+~/QuadraticProbingHash$ java QuadraticHash.java
+
+1.Insert
+2.Delete
+3.Print the hashtable
+4.Search
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+23
+
+1.Insert
+2.Delete
+3.Print the hashtable
+4.Search
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+33
+
+1.Insert
+2.Delete
+3.Print the hashtable
+4.Search
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+43
+
+1.Insert
+2.Delete
+3.Print the hashtable
+4.Search
+
+Enter the option
+3
+*******QUADRATIC PROBING HASH TABLE*******
+  -1  -1  -1  23  33  -1  -1  43  -1  -1
+1.Insert
+2.Delete
+3.Print the hashtable
+4.Search
+
+Enter the option
+4
+*******Search*******
+Enter the values to search
+23
+The element is present
+
+1.Insert
+2.Delete
+3.Print the hashtable
+4.Search
+
+Enter the option
+4
+*******Search*******
+Enter the values to search
+34
+The element is not present
+
+1.Insert
+2.Delete
+3.Print the hashtable
+4.Search
+
+Enter the option
+3
+*******QUADRATIC PROBING HASH TABLE*******
+  -1  -1  -1  23  33  -1  -1  43  -1  -1
+1.Insert
+2.Delete
+3.Print the hashtable
+4.Search
+
+Enter the option
+2
+*******DELETE*******
+Enter the values to delete
+33
+Deleted successfully
+
+1.Insert
+2.Delete
+3.Print the hashtable
+4.Search
+
+Enter the option
+3
+*******QUADRATIC PROBING HASH TABLE*******
+  -1  -1  -1  23  -1  -1  -1  43  -1  -1
+1.Insert
+2.Delete
+3.Print the hashtable
+4.Search
+
+Enter the option
+~/QuadraticProbingHash$ ^C
+~/QuadraticProbingHash$
