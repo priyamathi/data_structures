@@ -1,0 +1,266 @@
+#########################
+Main.java
+
+import java.util.*;
+
+class Main {
+    public static void main(String[] args)
+    {
+      int option = 0;
+      int value_number;
+      String value_name;
+      boolean value;
+      FineList list=new FineList();
+      Scanner myObj = new Scanner(System.in);
+
+      System.out.println("CONCURRENT LINKED LIST USING FINE GRAINED SYNCHRONIZATION\n");
+
+      while(true) {
+              System.out.println("1.Add\n2.Contains\n3.Remove\n");
+       System.out.println("Enter the option");
+      option = Integer.parseInt(myObj.nextLine());
+switch (option) {
+  case 1:
+      System.out.println("Enter the values to add");
+      value_number = Integer.parseInt(myObj.nextLine());
+      list.add(value_number);
+      break;
+  case 2:
+      System.out.println("Check whether the value is present or not?");
+      System.out.println("Enter the values to search");
+      value_number = Integer.parseInt(myObj.nextLine());
+      value = list.contains(value_number);
+      value_name = value ? "The value is present" : "The value is not present";
+      System.out.println(value_name);
+      break;
+      case 3:
+        System.out.println("Remove an item from the list");
+        System.out.println("Enter the value to remove");
+        value_number = Integer.parseInt(myObj.nextLine());
+        list.remove(value_number);
+      break;
+      default:
+      System.out.println("Invalid option");
+      break;
+        }    }
+    }
+}
+
+FineList.java
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class FineList {
+  private Node head;
+  public FineList() {
+    head  = new Node(Integer.MIN_VALUE);
+    head.next  = new Node(Integer.MAX_VALUE);
+  }
+
+  /**
+   * Add an element.
+   * @param item element to add
+   * @return true iff element was not there already
+   */
+  public boolean add(int item) {
+    head.node_lock.lock();
+    Node pred = head;
+    try {
+      Node current = pred.next;
+      current.node_lock.lock();
+      try {
+        while (current.item < item) {
+          pred.node_lock.unlock();
+          pred = current;
+          current = current.next;
+          current.node_lock.lock();
+        }
+        if (item == current.item) {
+          return false;
+        } else {
+          Node node = new Node(item);
+          node.next = current;
+          pred.next = node;
+          return true;
+        }
+        } finally {
+          current.node_lock.unlock();
+        }
+      } finally {
+        pred.node_lock.unlock();
+    }
+  }
+
+  /**
+   * Remove an element.
+   * @param item element to remove
+   * @return true iff element was present
+   */
+  public boolean remove(int item) {
+
+    Node pred = null, current = null;
+    head.node_lock.lock();
+    try {
+      pred = this.head;
+      current = pred.next;
+      current.node_lock.lock();
+      try {
+        while (current.item < item) {
+          pred.node_lock.unlock();
+          pred = current;
+          current = current.next;
+          current.node_lock.lock();
+      }
+      if (item == current.item) {
+        pred.next = current.next;
+        return true;
+      } else {
+        return false;
+      }
+        } finally {
+          current.node_lock.unlock();
+        }
+    } finally {
+      pred.node_lock.unlock();
+    }
+  }
+
+  /**
+   * Test whether element is present
+   * @param item element to test
+   * @return true iff element is present
+   */
+  public boolean contains(int item) {
+    Node pred, current;
+    head.node_lock.lock();
+    pred = head;
+    try {
+      current = pred.next;
+      current.node_lock.lock();
+      try {
+        while (current.item < item) {
+          pred.node_lock.unlock();
+          pred = current;
+          current = current.next;
+          current.node_lock.lock();
+        }
+        return (item == current.item);
+      } finally {
+        current.node_lock.unlock();
+      }
+    } finally {
+      pred.node_lock.unlock();
+    }
+  }
+
+  private class Node {
+    int item;
+    Node next;
+    private Lock node_lock = new ReentrantLock();
+    Node(int item) {
+      this.item = item;
+    }
+  }
+}
+
+
+##########################################
+OUTPUT
+
+ javac -classpath .:/run_dir/junit-4.12.jar:target/dependency/* -d . FineList.java Main.java
+ java -classpath .:/run_dir/junit-4.12.jar:target/dependency/* Main
+CONCURRENT LINKED LIST USING FINE GRAINED SYNCHRONIZATION
+
+1.Add
+2.Contains
+3.Remove
+
+Enter the option
+1
+Enter the values to add
+23
+1.Add
+2.Contains
+3.Remove
+
+Enter the option
+1
+Enter the values to add
+34
+1.Add
+2.Contains
+3.Remove
+
+Enter the option
+1
+Enter the values to add
+45
+1.Add
+2.Contains
+3.Remove
+
+Enter the option
+1
+Enter the values to add
+55
+1.Add
+2.Contains
+3.Remove
+
+Enter the option
+1
+Enter the values to add
+66
+1.Add
+2.Contains
+3.Remove
+
+Enter the option
+1
+Enter the values to add
+77
+1.Add
+2.Contains
+3.Remove
+
+Enter the option
+2
+Check whether the value is present or not?
+Enter the values to search
+77
+The value is present
+1.Add
+2.Contains
+3.Remove
+
+Enter the option
+2
+Check whether the value is present or not?
+Enter the values to search
+56
+The value is not present
+1.Add
+2.Contains
+3.Remove
+
+Enter the option
+3
+Remove an item from the list
+Enter the value to remove
+77
+1.Add
+2.Contains
+3.Remove
+
+Enter the option
+2
+Check whether the value is present or not?
+Enter the values to search
+77
+The value is not present
+1.Add
+2.Contains
+3.Remove
+
+Enter the option
