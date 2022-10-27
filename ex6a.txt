@@ -1,0 +1,336 @@
+import java.util.*;
+
+class Main{
+    private class node
+    {
+        int key;
+        node left, right;
+    };
+
+    /* Helper function that allocates
+       a new node with the given key and
+       null left and right pointers. */
+    private node newNode(int key)
+    {
+        node Node = new node();
+        Node.key = key;
+        Node.left = Node.right = null;
+        return (Node);
+    }
+/* A utility function to right
+ rotate subtree rooted with y */
+private node rightRotate(node x)
+{
+    node y = x.left;
+    x.left = y.right;
+    y.right = x;
+    return y;
+}
+/* A utility function to left
+ rotate subtree rooted with x */
+static node leftRotate(node x)
+{
+    node y = x.right;
+    x.right = y.left;
+    y.left = x;
+    return y;
+}
+private node splay(node root, int key)
+{
+    /* Base cases: root is null or
+     key is present at root */
+    if (root == null || root.key == key)
+        return root;
+
+    /* Key lies in left subtree */
+    if (root.key > key)
+    {
+        // Key is not in tree, we are done
+        if (root.left == null) return root;
+
+        // Zig-Zig (Left Left)
+        if (root.left.key > key)
+        {
+            // First recursively bring the
+            // key as root of left-left
+            root.left.left = splay(root.left.left, key);
+
+            // Do first rotation for root,
+            // second rotation is done after else
+            root = rightRotate(root);
+        }
+        else if (root.left.key < key) // Zig-Zag (Left Right)
+        {
+            // First recursively bring
+            // the key as root of left-right
+            root.left.right = splay(root.left.right, key);
+
+            // Do first rotation for root.left
+            if (root.left.right != null)
+                root.left = leftRotate(root.left);
+        }
+
+        // Do second rotation for root
+        return (root.left == null)? root: rightRotate(root);
+    }
+    else // Key lies in right subtree
+    {
+        // Key is not in tree, we are done
+        if (root.right == null) return root;
+
+        // Zig-Zag (Right Left)
+        if (root.right.key > key)
+        {
+            // Bring the key as root of right-left
+            root.right.left = splay(root.right.left, key);
+
+            // Do first rotation for root.right
+            if (root.right.left != null)
+                root.right = rightRotate(root.right);
+        }
+        else if (root.right.key < key)// Zag-Zag (Right Right)
+        {
+            // Bring the key as root of
+            // right-right and do first rotation
+            root.right.right = splay(root.right.right, key);
+            root = leftRotate(root);
+        }
+
+        // Do second rotation for root
+        return (root.right == null)? root: leftRotate(root);
+    }
+}
+  // Function to insert a new key k
+// in splay tree with given root
+private node insert(node root, int k)
+{
+    // Simple Case: If tree is empty
+    if (root == null) return newNode(k);
+
+    // Bring the closest leaf node to root
+    root = splay(root, k);
+
+    // If key is already present, then return
+    if (root.key == k) return root;
+
+    // Otherwise allocate memory for new node
+    node newnode = newNode(k);
+
+    // If root's key is greater, make
+    // root as right child of newnode
+    // and copy the left child of root to newnode
+    if (root.key > k)
+    {
+        newnode.right = root;
+        newnode.left = root.left;
+        root.left = null;
+    }
+
+    // If root's key is smaller, make
+    // root as left child of newnode
+    // and copy the right child of root to newnode
+    else
+    {
+        newnode.left = root;
+        newnode.right = root.right;
+        root.right = null;
+    }
+
+    return newnode; // newnode becomes new root
+}
+
+// A utility function to print
+// preorder traversal of the tree.
+private void preOrder(node root)
+{
+    if (root != null)
+    {
+        System.out.print(root.key+" ");
+        preOrder(root.left);
+        preOrder(root.right);
+    }
+}
+  private node search(node root, int key)
+{
+    return splay(root, key);
+}
+  // The delete function for Splay tree. Note that this function
+// returns the new root of Splay Tree after removing the key
+private node delete(node root, int key)
+{
+  node temp;
+  if(root == null) {
+    return null;
+    }
+  root = splay(root, key);
+  // If key is not present, then
+    // return root
+  if(root.key != key) {
+    return root;
+  }
+  // If key is present
+    // If left child of root does not exist
+    // make root->right as root
+  if(root.left == null) {
+    temp = root;
+    root = root.right;
+  } else {
+    // Else if left child exists
+  temp = root;
+    /*Note: Since key == root->key,
+        so after Splay(key, root->lchild),
+        the tree we get will have no right child tree
+        and maximum node in left subtree will get splayed*/
+        // New root
+        root = splay(root.left, key);
+
+        // Make right child of previous root  as
+        // new root's right child
+        root.right = temp.right;
+    }
+  // free the previous root node, that is,
+    // the node containing the key
+    temp = null;
+
+    // return root of the new Splay Tree
+    return root;
+  }
+  public static void main(String[] args) {
+    int value = 0, option =0;
+    Scanner myObj = new Scanner(System.in);
+    Main splaytree = new Main();
+    node root = null;
+      while(true) {
+      System.out.println("1.Insert\n2.Search\n3.Print the Splay tree\n4.Delete ");
+       System.out.println("Enter the option");
+      option = Integer.parseInt(myObj.nextLine());
+      switch (option) {
+        case 1:
+          System.out.println("*******INSERT*******");
+          System.out.println("Enter the value to add");
+                value = Integer.parseInt(myObj.nextLine());
+          try {
+          root = splaytree.insert(root, value);
+            } catch (Exception e) {
+          e.printStackTrace();
+        }
+          break;
+          case 2:
+          System.out.println("*******SEARCH*******");
+          System.out.println("Enter the value to search");
+          value = Integer.parseInt(myObj.nextLine());
+          root = splaytree.search(root, value);
+          if ( root.key == value) {
+              System.out.println("The element is present");
+          } else {
+              System.out.println("The element is not present");
+          }
+          break;
+        case 3:
+          System.out.println("*******Splay Tree in preorder*******");
+          splaytree.preOrder(root);
+          break;
+        case 4:
+          System.out.println("*******Delete in Splay Tree*******");
+          System.out.println("Enter the value to delete");
+            value = Integer.parseInt(myObj.nextLine());
+          root = splaytree.delete(root, value);
+          break;
+        default:
+          System.out.println("Wrong Option");
+          break;
+      }
+  }
+  }
+}
+
+
+OUTPUT:
+ sh -c javac -classpath .:target/dependency/* -d . $(find . -type f -name '*.java')
+ java -classpath .:target/dependency/* Main
+1.Insert
+2.Search
+3.Print the Splay tree
+4.Delete
+Enter the option
+1
+*******INSERT*******
+Enter the value to add
+13
+1.Insert
+2.Search
+3.Print the Splay tree
+4.Delete
+Enter the option
+1
+*******INSERT*******
+Enter the value to add
+14
+1.Insert
+2.Search
+3.Print the Splay tree
+4.Delete
+Enter the option
+1
+*******INSERT*******
+Enter the value to add
+15
+1.Insert
+2.Search
+3.Print the Splay tree
+4.Delete
+Enter the option
+1
+*******INSERT*******
+Enter the value to add
+17
+1.Insert
+2.Search
+3.Print the Splay tree
+4.Delete
+Enter the option
+2
+*******SEARCH*******
+Enter the value to search
+17
+The element is present
+1.Insert
+2.Search
+3.Print the Splay tree
+4.Delete
+Enter the option
+2
+*******SEARCH*******
+Enter the value to search
+19
+The element is not present
+1.Insert
+2.Search
+3.Print the Splay tree
+4.Delete
+Enter the option
+3
+*******Splay Tree in preorder*******
+17 15 14 13
+1.Insert
+2.Search
+3.Print the Splay tree
+4.Delete
+Enter the option
+4
+*******Delete in Splay Tree*******
+Enter the value to delete
+13
+1.Insert
+2.Search
+3.Print the Splay tree
+4.Delete
+Enter the option
+3
+*******Splay Tree in preorder*******
+15 14 17
+1.Insert
+2.Search
+3.Print the Splay tree
+4.Delete
+Enter the option
