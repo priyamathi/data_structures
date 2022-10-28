@@ -1,0 +1,83 @@
+import java.util.*;
+
+class ParallelMergeSort{
+
+        static void parallelmergesort(int arr[], int low, int high) {
+                if ( low < high) {
+                        int middle = (low +high) / 2;
+                        parallelmergesort(arr, low, middle);
+                        parallelmergesort(arr, middle+1, high);
+                        merge(arr, low, middle, high);
+                }
+        }
+
+        static void merge(int arr[], int low, int middle, int high) {
+                int n1 = middle - low + 1;
+                int n2 = high - middle;
+                /* temp arrs*/
+                int left[] = new int[n1];
+                int right[] = new int[n2];
+                /* Copy data*/
+                for (int i = 0; i <n1; ++i) {
+                        left[i] = arr[low+i];
+                }
+                for(int j = 0; j < n2; ++j) {
+                        right[j] = arr[middle+1+j];
+                }
+                /*Merge temp arr*/
+                int i = 0, j = 0;
+                int k = low;
+                while ( i < n1 && j < n2) {
+                        if(left[i] < right[j]) {
+                                arr[k] = left[i];
+                                i++;
+                        } else {
+                                arr[k] = right[j];
+                                j++;
+                        }
+                        k++;
+                }
+                /* copy remaining elements of left if any */
+                while ( i < n1) {
+                        arr[k] = left[i];
+                        i++;
+                        k++;
+                }
+                /* copy remaining elements of right if any */
+                while ( j < n2) {
+                        arr[k] = right[j];
+                        j++;
+                        k++;
+                }
+        }
+        public static void main(String[] args) {
+                int array[];
+                int array_size;
+                Scanner obj = new Scanner(System.in);
+                ParallelMergeSort ob = new ParallelMergeSort();
+                System.out.println("Enter the array size");
+                array_size = Integer.parseInt(obj.nextLine());
+                array = new int[array_size];
+                System.out.println("Enter the array element");
+                for ( int i = 0; i < array_size; i++) {
+                        System.out.print("array["+i+"] :");
+                        array[i] = Integer.parseInt(obj.nextLine());
+                }
+                ob.parallelmergesort(array, 0, array_size-1);
+                System.out.println("Sorted Array");
+                for ( int i = 0; i < array_size; i++) {
+                        System.out.print(array[i]+" ");
+                }
+        }
+}
+[21mcs001@mepcolinux EX12]$javac ParallelMergeSort.java
+[21mcs001@mepcolinux EX12]$java ParallelMergeSort
+Enter the array size
+4
+Enter the array element
+array[0] :6
+array[1] :2
+array[2] :9
+array[3] :3
+Sorted Array
+2 3 6 9 [21mcs001@mepcolinux EX12]$

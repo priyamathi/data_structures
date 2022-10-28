@@ -1,0 +1,120 @@
+########Random Quick sort
+import java.util.*;
+
+class RandomQSort {
+  static void random(int arr[],int low,int high)
+    {
+
+        Random rand= new Random();
+        int pivot = rand.nextInt(high-low)+low;
+        int temp1=arr[pivot];
+        arr[pivot]=arr[high];
+        arr[high]=temp1;
+    }
+  static int partition(int arr[], int low, int high)
+    {
+        System.out.println("##########PARTITION START for low : "+low+ "high : "+high);
+        // pivot is chosen randomly
+        random(arr,low,high);
+        int pivot = arr[high];
+        System.out.println("Pivot: "+pivot);
+        int i = (low-1); // index of smaller element
+        for (int j = low; j < high; j++)
+        {
+            // If current element is smaller than or
+            // equal to pivot
+            if (arr[j] < pivot)
+            {
+                i++;
+                // swap arr[i] and arr[j]
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        // swap arr[i+1] and arr[high] (or pivot)
+        int temp = arr[i+1];
+        arr[i+1] = arr[high];
+        arr[high] = temp;
+        System.out.println("##########PARTITION STOP for low : "+low+ "high : "+high);
+        return i+1;
+    }
+  public void quicksort(int array[], int low, int high) {
+        System.out.println("#######Quicksort Starts Low: "+low+ "High: "+high);
+        printArray(array, low, high);
+    if (low < high)
+        {
+            int pi = partition(array, low, high);
+                System.out.println("Pivot: "+pi);
+            quicksort(array, low, pi-1);
+            quicksort(array, pi+1, high);
+        }
+        System.out.println("##########Quicksort Ends for low : "+low+ "high : "+high);
+  }
+  public void printArray(int[] array, int array_size) {
+        System.out.println();
+    for (int i = 0; i < array_size; i++) {
+      System.out.print(array[i]+" ");
+    }
+        System.out.println();
+  }
+  public static void main(String[] args) {
+    int array[];
+    int array_size;
+    Scanner obj = new Scanner(System.in);
+    RandomQSort qsort = new RandomQSort();
+    System.out.println("Enter the size of the array");
+    array_size = Integer.parseInt(obj.nextLine());
+    array = new int[array_size];
+    for ( int i = 0; i < array_size; i++) {
+      array[i] = Integer.parseInt(obj.nextLine());
+    }
+    System.out.println("Before Sorting:\n");
+    qsort.printArray(array, array_size);
+    qsort.quicksort(array, 0, array_size-1);
+    System.out.println("After Sorting:\n");
+    qsort.printArray(array, array_size);
+  }
+}
+
+
+OUTPUT:
+
+~/RandomQSort$ javac RandomQSort.java
+~/RandomQSort$ java RandomQSort
+Enter the size of the array
+10
+3
+6
+5
+1
+9
+8
+32
+67
+22
+45
+Before Sorting:
+
+3
+6
+5
+1
+9
+8
+32
+67
+22
+45
+After Sorting:
+
+1
+3
+5
+6
+8
+9
+22
+32
+45
+67

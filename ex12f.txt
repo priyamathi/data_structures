@@ -1,0 +1,471 @@
+#######CUCKOO HASHING
+import java.util.*;
+
+class CuckooHash {
+  static int table_num = 2;
+  int table_size = 8;
+  int hashtable[][] = new int[table_num][table_size];
+  int LIMIT = 4;
+  CuckooHash(int tnum, int tsize) {
+    table_num = tnum;
+    table_size = tsize;
+    hashtable = new int[table_num][table_size];
+    for (int i = 0; i < table_num; i++) {
+      for (int j = 0; j< table_size; j++) {
+        hashtable[i][j] = -1;
+      }
+    }
+  }
+  int swap (int table_num, int key, int value1) {
+    int temp;
+    if (table_num == 0) {
+      temp = hashtable[0][key];
+      hashtable[0][key] = value1;
+    } else {
+      temp = hashtable[1][key];
+      hashtable[1][key] = value1;
+    }
+    value1 = temp;
+    return value1;
+  }
+
+  boolean insert(int value) {
+    if (search(value)) {
+      return false;
+    }
+    for ( int i = 0; i < LIMIT; i++) {
+      if((value = swap(0, hash(0, value), value) ) == -1) {
+        return true;
+      } else if((value = swap(1, hash(1, value), value) ) == -1) {
+        return true;
+      }
+    }
+    resize();
+    return insert(value);
+    }
+
+    void resize() {
+      int previous_table_size = table_size;
+      int i, j;
+      table_size = table_size * 2;
+      int temp_hashtable[][] = new int[table_num][table_size];
+    for (i = 0; i < table_num; i++) {
+      for (j = 0; j< previous_table_size; j++) {
+        temp_hashtable[i][j] = hashtable[i][j];
+      }
+        for (j = previous_table_size; j < table_size; j++) {
+          temp_hashtable[i][j] = -1;
+        }
+      }
+      hashtable = temp_hashtable;
+    }
+    void print() {
+      for( int i = 0; i < table_num; i++) {
+        System.out.print("\nTable["+i+"]");
+        for (int j = 0; j < table_size; j++) {
+        System.out.print("\nentry["+j+"] -"+hashtable[i][j]);
+        }
+      }
+    }
+    int hash (int table_num, int value) {
+      int key;
+      if( table_num == 0) {
+        key =(value % 9) % table_size;
+      } else {
+        key = (value % 11) % table_size;
+      }
+      return key;
+    }
+  boolean search(int value) {
+    if (value == hashtable[0][hash(0, value)] || value == hashtable[1][hash(1, value)]) {
+      return true;
+    }
+    return false;
+  }
+  boolean delete(int value) {
+    if (value == hashtable[0][hash(0, value)]) {
+      hashtable[0][hash(0, value)] = -1;
+      return true;
+    } else if (value == hashtable[1][hash(1, value)]) {
+      hashtable[1][hash(1, value)] = -1;
+      return true;
+    }
+    return false;
+  }
+
+  public static void main(String[] args) {
+      int value = 0, option =0;
+    boolean result = false;
+    Scanner myObj = new Scanner(System.in);
+    CuckooHash hashtable=new CuckooHash(table_num, 8);
+    while(true) {
+      System.out.println("\n1.Insert\n2.Print the hashtable\n3.Search\n4.Delete\n");
+      System.out.println("Enter the option");
+      option = Integer.parseInt(myObj.nextLine());
+      switch (option) {
+        case 1:
+          System.out.println("*******INSERT*******");
+          System.out.println("Enter the values to add");
+          value = Integer.parseInt(myObj.nextLine());
+          try {
+          result = hashtable.insert(value);
+            } catch (Exception e) {
+          e.printStackTrace();
+        }
+          if (result) {
+            System.out.println("\nInserted successfully");
+          } else {
+            System.out.println("\nInsertion failed");
+          }
+          break;
+        case 2:
+           System.out.println("*******HASH TABLE*******");
+          hashtable.print();
+          break;
+        case 3:
+          System.out.println("********Search");
+          System.out.println("Enter the values to search");
+          value = Integer.parseInt(myObj.nextLine());
+          result = hashtable.search(value);
+          if (result) {
+            System.out.println("\nElement is present");
+          } else {
+            System.out.println("\nElement is not present");
+          }
+          break;
+          case 4:
+          System.out.println("********Delete");
+          System.out.println("Enter the values to delete");
+          value = Integer.parseInt(myObj.nextLine());
+          result = hashtable.delete(value);
+          if (result) {
+            System.out.println("\nDeleted successfully");
+          } else {
+            System.out.println("\nDelete failed..Element is not present");
+          }
+          break;
+        default:
+          System.out.println("\nInvalid option");
+          break;
+      }
+      }
+  }
+}
+
+OUTPUT:
+
+[21mcs001@mepcolinux EX10]$javac CuckooHash.java
+[21mcs001@mepcolinux EX10]$java CuckooHash
+
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+3
+
+Inserted successfully
+
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+2
+*******HASH TABLE*******
+
+Table[0]
+entry[0] --1
+entry[1] --1
+entry[2] --1
+entry[3] -3
+entry[4] --1
+entry[5] --1
+entry[6] --1
+entry[7] --1
+Table[1]
+entry[0] --1
+entry[1] --1
+entry[2] --1
+entry[3] --1
+entry[4] --1
+entry[5] --1
+entry[6] --1
+entry[7] --1
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+12
+
+Inserted successfully
+
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+2
+*******HASH TABLE*******
+
+Table[0]
+entry[0] --1
+entry[1] --1
+entry[2] --1
+entry[3] -12
+entry[4] --1
+entry[5] --1
+entry[6] --1
+entry[7] --1
+Table[1]
+entry[0] --1
+entry[1] --1
+entry[2] --1
+entry[3] -3
+entry[4] --1
+entry[5] --1
+entry[6] --1
+entry[7] --1
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+39
+
+Inserted successfully
+
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+2
+*******HASH TABLE*******
+
+Table[0]
+entry[0] --1
+entry[1] --1
+entry[2] --1
+entry[3] -39
+entry[4] --1
+entry[5] --1
+entry[6] --1
+entry[7] --1
+Table[1]
+entry[0] --1
+entry[1] -12
+entry[2] --1
+entry[3] -3
+entry[4] --1
+entry[5] --1
+entry[6] --1
+entry[7] --1
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+23
+
+Inserted successfully
+
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+2
+*******HASH TABLE*******
+
+Table[0]
+entry[0] --1
+entry[1] --1
+entry[2] --1
+entry[3] -39
+entry[4] --1
+entry[5] -23
+entry[6] --1
+entry[7] --1
+Table[1]
+entry[0] --1
+entry[1] -12
+entry[2] --1
+entry[3] -3
+entry[4] --1
+entry[5] --1
+entry[6] --1
+entry[7] --1
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+14
+
+Inserted successfully
+
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+2
+*******HASH TABLE*******
+
+Table[0]
+entry[0] --1
+entry[1] --1
+entry[2] --1
+entry[3] -12
+entry[4] --1
+entry[5] -14
+entry[6] --1
+entry[7] --1
+Table[1]
+entry[0] --1
+entry[1] -23
+entry[2] --1
+entry[3] -3
+entry[4] --1
+entry[5] --1
+entry[6] -39
+entry[7] --1
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+3
+********Search
+Enter the values to search
+39
+
+Element is present
+
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+3
+********Search
+Enter the values to search
+40
+
+Element is not present
+
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+2
+*******HASH TABLE*******
+
+Table[0]
+entry[0] --1
+entry[1] --1
+entry[2] --1
+entry[3] -12
+entry[4] --1
+entry[5] -14
+entry[6] --1
+entry[7] --1
+Table[1]
+entry[0] --1
+entry[1] -23
+entry[2] --1
+entry[3] -3
+entry[4] --1
+entry[5] --1
+entry[6] -39
+entry[7] --1
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+4
+********Delete
+Enter the values to delete
+3
+
+Deleted successfully
+
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+4
+********Delete
+Enter the values to delete
+22
+
+Delete failed..Element is not present
+
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option
+2
+*******HASH TABLE*******
+
+Table[0]
+entry[0] --1
+entry[1] --1
+entry[2] --1
+entry[3] -12
+entry[4] --1
+entry[5] -14
+entry[6] --1
+entry[7] --1
+Table[1]
+entry[0] --1
+entry[1] -23
+entry[2] --1
+entry[3] --1
+entry[4] --1
+entry[5] --1
+entry[6] -39
+entry[7] --1
+1.Insert
+2.Print the hashtable
+3.Search
+4.Delete
+
+Enter the option

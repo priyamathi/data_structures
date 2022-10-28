@@ -1,0 +1,111 @@
+#####Travelling Salesperson problem
+#include<iostream>
+using namespace std;
+
+class TSP{
+    private:
+        int **arr;
+        int no_city;
+        int *completed;
+    public:
+        TSP(int);
+        void setValue();
+        void display();
+        void findShortestPath();
+};
+
+TSP::TSP(int n){
+    no_city = n;
+    completed = new int[n];
+    arr = new int*[n];
+    for(int i=0;i<n;i++)
+        arr[i] = new int[n];
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++)
+            arr[i][j] = 0;
+        completed[i] = 0;
+    }
+}
+
+void TSP::setValue(){
+    for(int i=0;i<no_city;i++){
+        cout<<"Enter the distance from city"<<i<<" to other cities\n";
+        for(int j=0;j<no_city;j++)
+            cin>>arr[i][j];
+    }
+}
+
+void TSP::findShortestPath(){
+    int v_city=0,min=1000;
+    int t_Cost=0;
+    int city=0,min_visited=0;
+    while(v_city < no_city-1){
+        completed[city] = 1;
+        for(int i=0;i<no_city;i++){
+            if(arr[city][i] < min && completed[i]!=1){
+                min=arr[city][i];
+                min_visited = i;
+            }
+        }
+        t_Cost+=min;
+        city = min_visited;
+        v_city++;
+        min=1000;
+    }
+    t_Cost+=arr[0][city];
+    cout<<"Shortest path : "<<t_Cost<<endl;
+
+}
+
+void TSP::display(){
+    cout<<"****************************\n";
+    cout<<"ADJACENCY MATRIX\n";
+    for(int i=0;i<no_city;i++){
+        for(int j=0;j<no_city;j++)
+            cout<<arr[i][j]<<"  ";
+        cout<<endl;
+    }
+ /*   cout<<"COMPLETED MATRIX\n";
+    for(int i=0;i<no_city;i++)
+A
+        cout<<completed[i]<<"   ";
+    cout<<endl;
+    cout<<"**************************\n";*/
+}
+
+int main(){
+    int num;
+    cout<<"******TRAVELLING SALESMAN PROBLEM*********\n";
+    cout<<"Enter the no of cities : ";
+    cin>>num;
+    TSP tsp(num);
+    tsp.setValue();
+    tsp.display();
+    tsp.findShortestPath();
+    return 1;
+}
+
+
+OUTPUT:
+
+~/TravellingSalesProblem$ c++ tsp.cpp
+~/TravellingSalesProblem$ ./a.out
+******TRAVELLING SALESMAN PROBLEM*********
+Enter the no of cities : 4
+Enter the distance from city0 to other cities
+0 10 30 20
+A
+Enter the distance from city1 to other cities
+10 0 5 13
+Enter the distance from city2 to other cities
+30 5 0 60
+Enter the distance from city3 to other cities
+20 13 60 0
+****************************
+ADJACENCY MATRIX
+0  10  30  20
+10  0  5  13
+30  5  0  60
+20  13  60  0
+Shortest path : 95
+~/TravellingSalesProblem$

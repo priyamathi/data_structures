@@ -1,0 +1,249 @@
+import java.io.*;
+import java.util.*;
+
+class SkewHeap {
+  SkewNode root;
+  SkewHeap()
+  {
+    root = null;
+  }
+  /* Insert item x into the priority queue, maintaining
+  heap order.*/
+  void insert(int x)
+  {
+    root = merge(new SkewNode(x), root);
+  }
+
+SkewNode merge(SkewNode h1, SkewNode h2)
+{
+    if (h1 == null)
+        return h2;
+    if (h2 == null)
+        return h1;
+   if (h1.element < h2.element)
+        return merge1(h1, h2);
+    else
+        return merge1(h2, h1);
+}
+SkewNode merge1(SkewNode h1,
+                                 SkewNode h2)
+{
+    if (h1.left == null)
+        h1.left = h2;
+    else
+    {
+        h1.right = merge(h1.right, h2);
+        swapChildren(h1);
+    }
+    return h1;
+}
+  void swapChildren(SkewNode t)
+{
+    SkewNode tmp = t.left;
+    t.left = t.right;
+    t.right = tmp;
+}
+  boolean isEmpty()
+  {
+    return root == null;
+  }
+  int findMin()
+  {
+    return root.element;
+  }
+  void deleteMin()
+  {
+    SkewNode oldRoot = root;
+    root = merge(root.left, root.right);
+    oldRoot = null;
+  }
+  private void inOrder(SkewNode root)
+  {
+    if (root != null)
+    {
+        inOrder(root.left);
+        System.out.print(root.element+" ");
+        inOrder(root.right);
+    }
+  }
+  class SkewNode
+  {
+    int element;
+    SkewNode left;
+    SkewNode right;
+    SkewNode(int element1) {
+      element = element1;
+      right = null;
+      left = null;
+    }
+    SkewNode(int element1, SkewNode lt1,
+                SkewNode rt1)
+    {
+        this.element = element1;
+        right = rt1;
+        left = lt1;
+    }
+}
+  public static void main(String[] args) {
+  int value = 0, option =0;
+    Scanner myObj = new Scanner(System.in);
+    SkewHeap skew_heap=new SkewHeap();
+    while(true) {
+      System.out.println("\n1.Insert\n2.Delete Min\n3.Print the skew heap\n4.Find minimum\n");
+       System.out.println("Enter the option");
+      option = Integer.parseInt(myObj.nextLine());
+      switch (option) {
+        case 1:
+          System.out.println("*******INSERT*******");
+          System.out.println("Enter the values to add");
+          value = Integer.parseInt(myObj.nextLine());
+          try {
+          skew_heap.insert(value);
+            } catch (Exception e) {
+          e.printStackTrace();
+        }
+          break;
+        case 2:
+          System.out.println("*******DELETE MIN*******");
+                  skew_heap.deleteMin();
+          break;
+        case 3:
+          System.out.println("*******SKEW HEAP*******");
+          skew_heap.inOrder(skew_heap.root);
+          break;
+        case 4:
+          System.out.println("*******FIND MINIMUM*******");
+          value = skew_heap.findMin();
+          System.out.println(" Minimum value : "+value);
+          break;
+        default:
+          System.out.println("Wrong Option");
+          break;
+      }
+  }
+  }
+}
+
+
+~/SkewHeap$ java SkewHeap
+
+1.Insert
+2.Delete Min
+3.Print the skew heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+1
+
+1.Insert
+2.Delete Min
+3.Print the skew heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+2
+
+1.Insert
+2.Delete Min
+3.Print the skew heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+3
+
+1.Insert
+2.Delete Min
+3.Print the skew heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+4
+
+1.Insert
+2.Delete Min
+3.Print the skew heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+5
+
+1.Insert
+2.Delete Min
+3.Print the skew heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+6
+
+1.Insert
+2.Delete Min
+3.Print the skew heap
+4.Find minimum
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+7
+
+1.Insert
+2.Delete Min
+3.Print the skew heap
+4.Find minimum
+
+Enter the option
+3
+*******SKEW HEAP*******
+7 3 5 1 6 2 4
+1.Insert
+2.Delete Min
+3.Print the skew heap
+4.Find minimum
+
+Enter the option
+4
+*******FIND MINIMUM*******
+ Minimum value : 1
+
+1.Insert
+2.Delete Min
+3.Print the skew heap
+4.Find minimum
+
+Enter the option
+2
+*******DELETE MIN*******
+
+1.Insert
+2.Delete Min
+3.Print the skew heap
+4.Find minimum
+
+Enter the option
+3
+*******SKEW HEAP*******
+5 4 3 7 2 6
+1.Insert
+2.Delete Min
+3.Print the skew heap
+4.Find minimum
+
+Enter the option

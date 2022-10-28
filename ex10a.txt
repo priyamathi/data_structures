@@ -1,0 +1,242 @@
+#########Concurrent hashing
+import java.util.Scanner;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+class LinearHashing{
+    public int arr[];
+    public int size;
+    public Lock lock = new ReentrantLock();
+    public LinearHashing(int bucket_length){
+        size = bucket_length;
+        arr = new int[size];
+        for(int i=0;i<size;i++)
+            arr[i] = -1;
+    }
+
+    public int insert(int ele){
+        int hash_code,i;
+        lock.lock();
+        try{
+         for(i = 0;i<size;i++){
+            hash_code = (ele+i)%size;
+            if(arr[hash_code]==-1)
+            {
+                arr[hash_code] = ele;
+                break;
+            }
+         }
+         if(i == size){
+            System.out.println("No space in hash table");
+            return 0;
+         }
+        }
+        finally{
+          lock.unlock();
+        }
+        return 1;
+    }
+
+    public int remove(int ele){
+        lock.lock();
+        try{
+        int hash_code,i;
+        for(i = 0;i<size;i++){
+            hash_code = (ele+i)%size;
+            if(arr[hash_code]==ele)
+            {
+                arr[hash_code] = -1;
+                break;
+            }
+        }
+        if(i == size){
+            System.out.println("No such element in the hash table");
+            return 0;
+        }
+    }finally{
+        lock.unlock();
+    }
+        return 1;
+    }
+
+    public void search(int ele){
+        lock.lock();
+        try{
+        int hash_code,i;
+        for(i = 0;i<size;i++){
+            hash_code = (ele+i)%size;
+            if(arr[hash_code]==ele)
+            {
+                System.out.println("Element is present");
+                break;
+            }
+        }
+        if(i == size){
+            System.out.println("No such element in the hash table");
+            return;
+        }
+    }finally{
+        lock.unlock();
+    }
+        return;
+    }
+
+    public void display(){
+        for(int i=0;i<size;i++)
+            System.out.println("BUCKET  "+i+"  "+arr[i]);
+    }
+}
+
+public class Hashing{
+    public static void main(String[] args){
+        System.out.println("CONCURRENT HASHING");
+        Scanner in = new Scanner(System.in);
+        System.out.print("Enter the size of bucket : ");
+        int bsize = in.nextInt();
+        int choice,num;
+        LinearHashing lHash = new LinearHashing(bsize);
+        do{
+            System.out.println("1.  INSERT\n2.  REMOVE\n3.  SEARCH\n4. DISPLAY");
+            System.out.print("Enter your choice : ");
+            choice = in.nextInt();
+            switch(choice){
+                case 1:
+                    System.out.print("Enter the element to insert : ");
+                    num = in.nextInt();
+                    lHash.insert(num);
+                    break;
+                case 2:
+                    System.out.print("Enter the element to remove : ");
+                    num = in.nextInt();
+                    lHash.remove(num);
+                    break;
+                case 3:
+                    System.out.print("Enter the element to search : ");
+                    num = in.nextInt();
+                    lHash.search(num);
+                    break;
+                case 4:
+                    System.out.println("**********DISPLAY HASH TABLE**************");
+                    lHash.display();
+                    break;
+            }
+        }while(choice>0 && choice<5);
+    }
+}
+
+
+OUTPUT:
+[21mcs001@mepcolinux EX10]$javac Hashing.java
+[21mcs001@mepcolinux EX10]$java Hashing
+CONCURRENT HASHING
+Enter the size of bucket : 10
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice : 1
+Enter the element to insert : 12
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice : 1
+Enter the element to insert : 13
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice : 1
+Enter the element to insert : 22
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice : 1
+Enter the element to insert : ^C[21mcs001@mepcolinux EX10]$
+[21mcs001@mepcolinux EX10]$
+[21mcs001@mepcolinux EX10]$
+[21mcs001@mepcolinux EX10]$java Hashing
+CONCURRENT HASHING
+Enter the size of bucket : 10
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice : 1
+Enter the element to insert : 23
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice : 1
+Enter the element to insert : 33
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice : 1
+Enter the element to insert : 43
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice : 1
+Enter the element to insert : 55
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice : 4
+**********DISPLAY HASH TABLE**************
+BUCKET  0  -1
+BUCKET  1  -1
+BUCKET  2  -1
+BUCKET  3  23
+BUCKET  4  33
+BUCKET  5  43
+BUCKET  6  55
+BUCKET  7  -1
+BUCKET  8  -1
+BUCKET  9  -1
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice : 3
+Enter the element to search : 23
+Element is present
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice : 3
+Enter the element to search : 34
+No such element in the hash table
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice : 2
+Enter the element to remove : 33
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice : 4
+**********DISPLAY HASH TABLE**************
+BUCKET  0  -1
+BUCKET  1  -1
+BUCKET  2  -1
+BUCKET  3  23
+BUCKET  4  -1
+BUCKET  5  43
+BUCKET  6  55
+BUCKET  7  -1
+BUCKET  8  -1
+BUCKET  9  -1
+1.  INSERT
+2.  REMOVE
+3.  SEARCH
+4. DISPLAY
+Enter your choice :

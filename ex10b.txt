@@ -1,0 +1,372 @@
+##########Concurrent Skiplist
+import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.Lock;
+
+// Class for Skip list
+class LockBasedSkipList
+{
+    // Maximum level for this skip list
+    int MAXLVL;
+
+    // P is the fraction of the nodes with level
+    // i pointers also having level i+1 pointers
+
+    // current level of skip list
+    int level;
+
+    // pointer to header node
+    Node header;
+   Lock lock = new ReentrantLock();
+LockBasedSkipList(int MAXLVL)
+{
+    this.MAXLVL = MAXLVL;
+    level = 0;
+
+    // create header node and initialize data to -1
+    header = new Node(-1, MAXLVL);
+}
+
+// create random level for node
+int randomLevel()
+{
+    Random rand = new Random();
+   return rand.nextInt(MAXLVL);
+}
+
+// create new node
+Node createNode(int data, int level)
+{
+    Node n = new Node(data, level);
+    return n;
+}
+
+// Insert given data in skip list
+private void insertElement(int data)
+{
+    Node current = header;
+    lock.lock();
+    // create update array and initialize it
+    Node [] update;
+    update = new Node[MAXLVL+1];
+      for (int i = 0; i < MAXLVL+1; i++) {
+      update[i] = null;
+    }
+    for (int i = level; i >= 0; i--)
+    {
+        while (current.forward[i] != null &&
+              current.forward[i].data < data)
+            current = current.forward[i];
+        update[i] = current;
+    }
+
+    /* reached level 0 and forward pointer to
+       right, which is desired position to
+       insert data.
+    */
+    current = current.forward[0];
+
+    /* if current is NULL that means we have reached
+       to end of the level or current's data is not equal
+       to data to insert that means we have to insert
+       node between update[0] and current node */
+    if (current == null || current.data != data)
+    {
+        // Generate a random level for node
+        int rlevel = randomLevel();
+
+        // If random level is greater than list's current
+        // level (node with highest level inserted in
+        // list so far), initialize update value with pointer
+        // to header for further use
+        if (rlevel > level)
+        {
+            for (int i=level+1;i<rlevel+1;i++)
+                update[i] = header;
+
+            // Update the list current level
+            level = rlevel;
+        }
+
+        // create new node with random level generated
+        Node n = createNode(data, rlevel);
+
+        // insert node by rearranging pointers
+        for (int i=0;i<=rlevel;i++)
+        {
+            n.forward[i] = update[i].forward[i];
+            update[i].forward[i] = n;
+        }
+        System.out.println("Successfully Inserted data "+ data);
+    }
+  lock.unlock();
+}
+
+// Display skip list level wise
+void displayList()
+{
+  lock.lock();
+    System.out.println("*****Skip List*****");
+    for (int i=0;i<=level;i++)
+    {
+        Node node = header.forward[i];
+        System.out.print("Level "+i+": ");
+        while (node != null)
+        {
+            System.out.print(node.data+" ");
+            node = node.forward[i];
+        }
+        System.out.print("\n");
+    }
+  lock.unlock();
+}
+
+  // Search for element in skip list
+void searchElement(int data)
+{
+    Node current = header;
+    lock.lock();
+    /*    start from highest level of skip list
+        move the current pointer forward while data
+        is greater than data of node next to current
+        Otherwise inserted current in update and
+        move one level down and continue search
+    */
+    for(int i = level; i >= 0; i--)
+    {
+        while(current.forward[i] != null && current.forward[i].data < data)
+            current = current.forward[i];
+
+    }
+
+    /* reached level 0 and advance pointer to
+       right, which is possibly our desired node*/
+    current = current.forward[0];
+
+    // If current node have data equal to
+    // search data, we have found our target node
+    if(current != null && current.data == data) {
+        System.out.println("Found data: "+data+"\n");
+      } else {
+        System.out.println("data is not found \n");
+      }
+  lock.unlock();
+}
+// Delete element from skip list
+void deleteElement(int data)
+{
+    Node current = header;
+    lock.lock();
+    // create update array and initialize it
+    Node[] update;
+    update = new Node[MAXLVL+1];
+      for (int i = 0; i < MAXLVL+1; i++) {
+      update[i] = null;
+    }
+
+    /*    start from highest level of skip list
+        move the current pointer forward while data
+        is greater than data of node next to current
+        Otherwise inserted current in update and
+        move one level down and continue search
+    */
+    for(int i = level; i >= 0; i--)
+    {
+        while(current.forward[i] != null  &&
+              current.forward[i].data < data)
+            current = current.forward[i];
+        update[i] = current;
+    }
+
+    /* reached level 0 and forward pointer to
+       right, which is possibly our desired node.*/
+    current = current.forward[0];
+
+    // If current node is target node
+    if(current != null && current.data == data)
+    {
+        /* start from lowest level and rearrange
+           pointers just like we do in singly linked list
+           to remove target node */
+        for(int i=0;i<=level;i++)
+        {
+            /* If at level i, next node is not target
+               node, break the loop, no need to move
+              further level */
+            if(update[i].forward[i] != current)
+                break;
+
+            update[i].forward[i] = current.forward[i];
+        }
+
+        // Remove levels having no elements
+        while(level>0 && header.forward[level] == null) {
+            level--;
+          }
+         System.out.println("Successfully deleted data "+data+"\n");
+    }
+  lock.unlock();
+}
+ // Class to implement node
+class Node
+{
+    int data;
+    // Array to hold pointers to node of different level
+    Node[] forward;
+
+Node(int data, int level)
+{
+    this.data = data;
+    // Allocate memory to forward
+    forward = new Node[level+1];
+    for (int i = 0; i < level+1; i++) {
+      forward[i] = null;
+    }
+}
+}
+// Driver to test above code
+  public static void main(String[] args) {
+    int value = 0, option =0;
+    Scanner myObj = new Scanner(System.in);
+    LockBasedSkipList skiplist=new LockBasedSkipList(3);
+    while(true) {
+      System.out.println("1.Insert\n2.Delete\n3.Print the skiplist\n4.Search\n");
+       System.out.println("Enter the option");
+      option = Integer.parseInt(myObj.nextLine());
+      switch (option) {
+        case 1:
+          System.out.println("*******INSERT*******");
+          System.out.println("Enter the values to add");
+          value = Integer.parseInt(myObj.nextLine());
+          try {
+          skiplist.insertElement(value);
+            } catch (Exception e) {
+          e.printStackTrace();
+        }
+          break;
+        case 2:
+          System.out.println("*******DELETE*******");
+          System.out.println("Enter the values to delete");
+          value = Integer.parseInt(myObj.nextLine());
+          skiplist.deleteElement(value);
+          break;
+        case 3:
+          System.out.println("*******SKIPLIST*******");
+          skiplist.displayList();
+          break;
+        case 4:
+          System.out.println("*******Search*******");
+          System.out.println("Enter the values to search");
+          value = Integer.parseInt(myObj.nextLine());
+          skiplist.searchElement(value);
+          break;
+        default:
+          System.out.println("Wrong Option");
+          break;
+      }
+  }
+  }
+}
+
+OUTPUT:
+
+~/ConcurrentSkipList$ javac LockBasedSkipList.java
+~/ConcurrentSkipList$ java LockBasedSkipList
+1.Insert
+2.Delete
+3.Print the skiplist
+4.Search
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+23
+Successfully Inserted data 23
+1.Insert
+2.Delete
+3.Print the skiplist
+4.Search
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+24
+Successfully Inserted data 24
+1.Insert
+2.Delete
+3.Print the skiplist
+4.Search
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+45
+Successfully Inserted data 45
+1.Insert
+2.Delete
+3.Print the skiplist
+4.Search
+
+Enter the option
+1
+*******INSERT*******
+Enter the values to add
+67
+Successfully Inserted data 67
+1.Insert
+2.Delete
+3.Print the skiplist
+4.Search
+
+Enter the option
+3
+*******SKIPLIST*******
+*****Skip List*****
+Level 0: 23 24 45 67
+Level 1: 23 24 45
+Level 2: 23 24 45
+1.Insert
+2.Delete
+3.Print the skiplist
+4.Search
+
+Enter the option
+2
+*******DELETE*******
+Enter the values to delete
+67
+Successfully deleted data 67
+
+1.Insert
+2.Delete
+3.Print the skiplist
+4.Search
+
+Enter the option
+3
+*******SKIPLIST*******
+*****Skip List*****
+Level 0: 23 24 45
+Level 1: 23 24 45
+Level 2: 23 24 45
+1.Insert
+2.Delete
+3.Print the skiplist
+4.Search
+
+Enter the option
+4
+*******Search*******
+Enter the values to search
+23
+Found data: 23
+
+1.Insert
+2.Delete
+3.Print the skiplist
+4.Search
+
+Enter the option
